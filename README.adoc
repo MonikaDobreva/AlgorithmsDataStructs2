@@ -1,0 +1,378 @@
+ifdef::env-github[]
+:imagesdir: images/
+endif::[]
+:imagesdir: images
+
+== Introduction
+
+For time and date we will use the java.time API. This implies that points in time are expressed as instances of `java.time.Instant` and time duration
+in `java.time.Duration`. `LocalTime` and `LocalDate` (at a time zone, for instance the system default) will be used at the end user level, to represent time and date values.
+The requirements state that the service should work across time zone boundaries.
+'''
+
+.According to nature time is simple. But humans messed it up.
+image::earth-transporting-timeline.svg[]
+
+== Time allocation
+
+The advised approach, also used in the reference implementation, is to use an *Allocation Strategy* on a time line.
+An allocation strategy maintains a 'record' of  both the allocated _time slots_ and the (remaining) free _time slots_.
+
+To make the api robust for use when applied to making appointments across the globe, the time is managed based on java.time.Instant objects.
+`TimeSlot` objects are then simply amounts of the time between to instants on the timeline.
+
+To give the human user a friendly interface the planned times and dates can be presented as `LocalTime` and `LocalDate`
+ values by using the `LocalDay` class provided in the API.
+
+
+.Time allocation
+image::timeAllocation.svg[]
+
+
+=== Task 1: Study the https://alda.fontysvenlo.org/apis/appointmentplanner-api-v4.0/appointmenplanner.api/module-summary.html[API]
+
+To make sure that we (teachers/examiners and students alike) all are programming against the same API, study the
+https://alda.fontysvenlo.org/apis/appointmentplanner-api-v4.0/appointmenplanner.api/module-summary.html[API documentation ^], and in the odd
+case the source code. The source code of the API will be available. When built, the resulting jar
+will contain the JPMS module `appointmenplanner.api`.
+
+.JPMS [black]#module-info.java# file of the API module.
+[source,java]
+----
+module appointmenplanner.api {
+    exports appointmentplanner.api;
+}
+----
+
+.Abbreviated API class diagram
+image::cd-abrev-v4_0.svg[]
+
+In the class diagram many details have been left out. Study the javadoc of the https://alda.fontysvenlo.org/apis/appointmentplanner-api-v4.0/appointmenplanner.api/module-summary.html[API]
+ for the exact details.
+
+. Use NetBeans and open the Maven project with name: `AppointmentPlanner`.
+    Package `appointmentplanner` is already present.
+.. Remember that we build using maven.
+
+. Create a log book in which you discuss questions regarding design and implementation. Choice of format is free. You are
+    encouraged to make comments on the assignment. For instance Javadoc should be improved with ...,
+    I would have designed this differently, as in .... etc.
+
+.Module info file of implementation with implementation of factory in class `appointmentplanner.ApFactory`
+[source,java]
+----
+module appointmentplanner {
+    requires appointmenplanner.api;
+    provides appointmentplanner.api.AbstractAPFactory with appointmentplanner.ApFactory;
+}
+----
+
+Note that you do not need to export the implementing package, meaning you are free in the choice of internal structure, but you *must*
+announce in the module-info file which class provides the required interface.
+
+.Module info of client application such as the teachers tests.
+[source,java]
+----
+module appointment.teachertests {
+  requires appointmenplanner.api;
+  uses appointmentplanner.api.AbstractAPFactory;
+}
+----
+
+Unless the application itself is a library, it does not have to export any internal details.
+
+[CAUTION,role="red"]
+====
+[red]*Testing* and [green]*feedback*
+
+* You should work test driven.
+  Write only the code that is needed in your tests.
+  That way you will keep your code [green]*coverage near 100%*.
+* Your code will be tested soon after commit and the results will be published on a website linked at the top.
+
+But: be aware that you *HAVE TO WRITE* your _own_ tests.
+====
+
+=== Teacher's Test data
+
+In our black box tests, which we apply to the student's project, we use the following test data, presented as a diagram.
+
+.teacher test data
+image::daytestplan.svg[]
+
+As an example: If you need to know what the meaning of for instance `app6` in any error message, you can look in the diagram and infer that it
+is an appointment to be planned between 14:30 (LocalTime) and 15:00, length 30 minutes.
+
+We will be using this test set in many of the tests.
+
+* For instance, the day with which we test is filled with app1..7 from the diagram, such that this
+  implicitly tests that appointments with fixed times can be added.
+* Then some of the appointments may be removed, which tests the removal of appointments.
+  After that it should be possible to add an appointment with a longer duration.
+* In some other tests, the 'day' may be created shorter, to ensure that no appointment will fit and to test how the implementation reacts to that.
+
+.test data file used in the teachers tests
+[source,java]
+----
+package appointmentplanner;
+
+import appointmentplanner.api.AbstractAPFactory;
+import appointmentplanner.api.LocalDay;
+import appointmentplanner.api.LocalDayPlan;
+import appointmentplanner.api.Priority;
+import appointmentplanner.api.TimePreference;
+import java.time.Duration;
+import java.time.LocalTime;
+
+/**
+ *
+ * @author Pieter van den Hombergh {@code p.vandenhombergh@fontys.nl}
+ */
+interface TestData {
+
+    static final AbstractAPFactory fac = GetFactory.getFactory();
+    static final LocalDay TODAY = new LocalDay();
+//    Instant I08_30 = LocalTime.of( 8, 30 ).;
+    static final LocalTime T08_30 = LocalTime.of( 8, 30 );
+    static final LocalTime T09_00 = LocalTime.of( 9, 0 );
+    static final LocalTime T09_30 = LocalTime.of( 9, 30 );
+    static final LocalTime T10_00 = LocalTime.of( 10, 0 );
+    static final LocalTime T10_30 = LocalTime.of( 10, 30 );
+    static final LocalTime T10_45 = LocalTime.of( 10, 45 );
+    static final LocalTime T11_10 = LocalTime.of( 11, 10 );
+    static final LocalTime T14_30 = LocalTime.of( 14, 30 );
+    static final LocalTime T15_00 = LocalTime.of( 15, 0 );
+    static final LocalTime T15_15 = LocalTime.of( 15, 15 );
+    static final LocalTime T15_45 = LocalTime.of( 15, 45 );
+    static final LocalTime T16_00 = LocalTime.of( 16, 00 );
+    static final LocalTime T17_30 = LocalTime.of( 17, 30 );
+    static final Duration D15 = Duration.ofMinutes( 15 );
+    static final Duration D30 = Duration.ofMinutes( 30 );
+    static final Duration D80 = Duration.ofMinutes( 80 );
+    static final Duration D90 = Duration.ofMinutes( 90 );
+    static final Duration D200 = Duration.ofMinutes( 200 );
+    static final APAppointmentData DATA1 = new APAppointmentData( "app1 30 min @9:00", D30, Priority.LOW );
+    static final APAppointmentData DATA2 = new APAppointmentData( "app2 30 min @9:30", D30, Priority.LOW );
+    static final APAppointmentData DATA3 = new APAppointmentData( "app3 15 min @10:30", D15, Priority.MEDIUM );
+    static final APAppointmentData DATA4 = new APAppointmentData( "app4 15 min @10:45", D15, Priority.HIGH );
+    static final APAppointmentData DATA5 = new APAppointmentData( "app5 200 min @11:10", D200, Priority.HIGH );
+    static final APAppointmentData DATA6 = new APAppointmentData( "app6 30 min @14:30", D30, Priority.LOW );
+    static final APAppointmentData DATA7 = new APAppointmentData( "app7 30 min @16:00", D90, Priority.LOW );
+    static final APAppointmentRequest AR1 = new APAppointmentRequest( DATA1, T09_00, TimePreference.UNSPECIFIED );
+    static final APAppointmentRequest AR2 = new APAppointmentRequest( DATA2, T09_30 );
+    static final APAppointmentRequest AR3 = new APAppointmentRequest( DATA3, T10_30 );
+    static final APAppointmentRequest AR4 = new APAppointmentRequest( DATA4, T10_45 );
+    static final APAppointmentRequest AR5 = new APAppointmentRequest( DATA5, T11_10 );
+    static final APAppointmentRequest AR6 = new APAppointmentRequest( DATA6, T14_30 );
+    static final APAppointmentRequest AR7 = (APAppointmentRequest) fac.createAppointmentRequest( DATA7, T16_00, TimePreference.EARLIEST );
+
+    static LocalDayPlan standardDay() {
+        LocalDayPlan td = emptyWorkingDay();
+        addApps( td, AR1, AR2, AR3, AR4, AR5, AR6, AR7 );
+        return td;
+    }
+
+    static LocalDayPlan emptyWorkingDay() {
+        return fac.createLocalDayPlan( TODAY, LocalTime.of( 8, 30 ), LocalTime.of( 17, 30 ) );
+    }
+
+    static LocalDayPlan addApps( LocalDayPlan dp, APAppointmentRequest... app ) {
+
+        for ( APAppointmentRequest ar : app ) {
+            ar.apply( fac, dp );
+        }
+        return dp;
+    }
+
+}
+----
+
+=== Task 2: Implement the service
+
+You should go about in an easy way. There are a few data object classes, specified as interfaces,
+such as `AppointmentRequest` and `AppointmentData` that should be easy to implement. The implementing class
+could simply have the same name, as long as you put it a different package. This will be enforced by JPMS anyway, because it
+does not allow _split_ packages. So `AppointmentDataImpl`, `myimpl.AppointmentData`, or `JohnsAppointmentData` would all be fine.
+The client application does not need to know nor cares, because it will access the implementations through the service, which
+behaves like the concrete factory in the https://en.wikipedia.org/wiki/Abstract_factory_pattern[Abstract Factory ^] pattern.
+
+The timeline is the tricky part.
+
+=== Timeline model
+
+//To give you some ideas about a possible implementation of a time line with appointment time allocations
+Because we want to make sure that the exercise is doable, we created an implementation which can serve as
+a source of ideas. We share the ideas, not the implementation.
+
+In the implementaion, the timeline internally maintains a doubly linked list of special purpose nodes.
+
+.Time line model.
+image::cut-it-up-v40.svg[]
+
+The timeline model shows a doubly linked list of special purpose nodes of type 'AllocationNode'
+that have a notion of points in time and distance (duration) between
+those points and a 'purpose' or payload. The *invariant* of the Timeline implementing class
+is that there are never adjacent free slots. To keep this invariant true, if a slot is freed, it must be merged with
+any free adjacent slot. In the picture: If allocation *b* would be freed,
+it would be merged with both the left hand and right hand free block
+into one free block, extending  from the start of *a* to the end of *c*.
+
+Appointments or timeline allocations are created by taking (a part of) a free slot. In case the slot has the required size and is
+at an acceptable time it will be used as is. If the free slot is otherwise large enough to allow the allocation inside of it, the free
+slot will be cut into the required parts, by cutting it once or twice.
+
+From the image you might assume that the allocation nodes double as Appointment and TimeSlots, however in the
+design we do *not* want to hand out objects that are tightly bound into the internal data structure.
+So in the case where the API want and object implementing either interface, an instance of a separate class is handed out instead.
+There is one such class for the *free* case, which is just an implementation of a _TimeSlot_ data carrier and another that
+that is an implementation of the `Appointment` having all the data of request and allocated time information. Rationale: The
+fields that tie the objects in the linked list have no meaning in another virtual machine across the globe.
+
+=== Hints to the implementor
+
+If you use modern programming techniques such as lambda expressions and streams the implementation will become more elegant and will
+have less code overall. Using streams makes it particularly simple to select time slots or appointments by applying the appropriate filtering.
+Having streams for each direction (from early to late and from late to early) also helps to ease the implementation a few API methods.
+
+Even in the case of having your own double linked list it is possible to use streams. The only requirement is that you write your
+own *Iterator*. While you are at it, create (and of course test) an Iterator that starts at the other end too.
+When you have an iterator, creating a stream is easy, just use the following recipe.
+
+.Streaming using your home made iterator
+[source,java]
+----
+Stream<AllocationNode> stream() {
+        Spliterator<AllocationNode> spliterator = Spliterators.spliteratorUnknownSize( iterator(), ORDERED );
+        return StreamSupport.stream( spliterator, false );
+}
+----
+
+The iterator method returns your iterator, which is then used to create a stream. In the example the stream streams allocation nodes.
+From there you can use a `map(...)` to for instance retrieve the appointment info or create other objects on the fly.
+
+You can also easily create a reverse stream, using a `reverseIterator()` (that you implement). In all cases the resulting stream can be used as a normal (Java 8)
+stream, to filter, sort, map, and reduce. As useful reduce operations are min, max, collect etc. In many cases the required API methods can then be implemented with
+one or two not too complex statements.
+
+=== Combining appointments, finding common free time.
+
+The most useful way to have appointments if to have at least two parties involved.
+Examples: You and your class, or you at the dentist's. +
+The problem is to find common free time.
+
+.Four timelines with their free time slots input cyan, output green.
+image::timelines.svg[]
+
+In figure we have to find the common free slots by means of an algorithm. The figure
+shows the empty timeslots.
+
+*Definitions*
+
+* The free slots are the cyan rectangles, between start and end points.
+* All time lines start left of *a*, which is the _start point_ of the first _free slot_ *ab*, starting at *a* and ending at *b*. +
+  Timeline II in the figure.
+* The free slots have two edges, the starting edge and the ending edge.
+* A vertical dashed line demarcates a interesting point (an Instant) in time, such as the time of one or more edges. This is a *potentially cutting edge*.
+* For a cutting edge edge to be of interest to the finding common free slots problem, that line must _cut_ in *all* time slots, i.e. fall within
+ the boundaries of *all* _other_ free time slots. In other words: all free slots should be touched or cut by the cutting edge.
+** In the example, *a*, *b*, and *c* do not cut; *d* only cuts *I*,  and *e* cuts *I* and *III*.
+* For a _starting edge_ to be of interest, if must cut or touch at the beginning of all participating free slots
+  and hence be the _maximum_ starting edge of all participating free slots.
+* For an _ending edge_, it must cut our touch at the end and therefor be the _minimum_ ending edge of all participating slots.
+
+=== Algorithm
+
+First collect all free slots of all time lines in a list per timeline. The API provides methods to do that.
+In the algorithm we only consider the first (remaining) candidate slots of the participating lines.
+
+Then the steps are:
+
+. When any of the lists is empty you are done. This is the same as have no more free slots on any of the time lines,
+  which would make continuing pointless.
+image:timelines0a.svg[role='thumb right']
+. Determine first starting edge which is the `max(startEdge)` of all timelines. +
+  In the example, this selects *e*.
+//  .elimintation of *a-b*, because it is before the max start (*e*) of first slots.
+
+. Eliminate all slots that cannot be cut anymore by this edge from the lists. I.e. all slots that end before or at the edge. +
+  In the example that eliminates *a-b*.
+.. If there is an elimination, restart at step one. +
+  In the second round, *a-b* is gone and the next candidate start edge is *j*, being the max of the remaining starts. +
+  This will eliminate slots *c-f*, *d-g* and *e-g* as per rule 3.
+image:timelines1.svg[role='thumb right']
+. Determine the first ending edge, which is the `min(endEdge)` of all time lines. +
+  In the example that is *f*. But note that *f* does not cut it (does not cut all, because *d-g* and *e-g* have been eliminated),
+  so *f* is not a valid candidate. +
+  The previous steps will have eliminated all before  point *h*.
+. With a starting edge that cuts (*j* in the example), find the ending edge, which is the min(endEdge) of all participating slot.
+.. If the ending edge does *not* cut all, eliminated all slots that end at or before this end edge.
+.. In the example, the end edge cuts all and is *k*.
+image:timelines2.svg[role='thumb right']
+. Save the the common free slot *[j,k)* found by the all cutting with start edge and all cutting end edge as first slot in the result.
+. Remove all slots that can no longer be cut, as in every slot that ends at or before the end edge. +
+  This removes *h-k* (which provided the cutting edge) and anything having and endEdge less or equal to *k* (the end cutter).
+//  .common slot between *o-r*, *n-s*, *o-q*, and *p-y*.
+image:timelines3a.svg[role='thumb right']
+. Start at 1, finding the next startEdge that cuts. +
+  This will find p (start on line IV), (max(startEdge)), eleminating *j-l* on *II*,  *i-m* on *III*, and *i-l*  on *IV*. +
+  Since *p* cuts all, we can find the next min(endEdge), which is *q*, and will yield *[p,q)* as the second common gap.
+
+'''
+
+Continue in this way to also find *v-w* als last common gap.
+
+[source,sh]
+----
+while (there are slots in *all* timelines) {
+  find max(start) of all *first* slots of the lines -> startEdge
+  eliminate all slots can no longer be cut by an _all-cut_ by this startEdge
+  If there are any eliminations, continue from the top
+
+  // the start edge cuts, so find the end of the cut.
+  find min(end) of all first slots of the lines -> endEdge
+  if the duration between startEdge and endEdge meets the required duration,
+     add a timeslot [startEdge,endEdge) to the result.
+  eliminate all first slots that end at or before endEdge
+}
+----
+
+The whole sequence of pictures:
+
+.elimintation of a-b, because it is before the max start (e) of first slots.
+image::timelines0a.svg[]
+
+.remaining, now max start of first is *j*.
+image::timelines1.svg[]
+
+.elimination of *c-f*, *d-g*, and *e-g*, all before *j*.
+image::timelines1a.svg[]
+
+.found first common free slot:
+image::timelines2.svg[]
+
+.eliminate *h-k* because it can no longer be cut by *k*.
+image::timelines2a.svg[]
+
+.remaining max first slot start edge = *o*.
+image::timelines2b.svg[]
+
+.elimination of *j-l*, *i-m*, and *i-l* by *o* that will not cut them.
+image::timelines2c.svg[]
+
+.common slot between *o-r*, *n-s*, *o-q*, and *p-y*.
+image::timelines3a.svg[]
+
+.elimination of 'end-cutter' *o-q* leaving start edge *v*.
+image::timelines3b.svg[]
+
+.elimination of *o-r* and *n-s* by *v*.
+image::timelines3c.svg[]
+
+.remainder start at *v* and end at *w*.
+image::timelines3d.svg[]
+
+.elimination of *t-w* and *u-w* by cut at *w*.
+image::timelines4a.svg[]
+
+.remainder has lines without slots, making algorithm stop.
+image::timelines4b.svg[]
