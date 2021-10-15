@@ -6,7 +6,7 @@ package appointmentplanner.api;
 /**
  * Appointment that can be scheduled using the appointment planner.
  *
- * An appointment is a tupple of appointment data, day and start time.
+ * An appointment is a tuple of appointment data, day and start time.
  *
  * Having an appointment implies that there has been a successful allocation on
  * a day at a time. The appointment is only valid when it is allocated on some
