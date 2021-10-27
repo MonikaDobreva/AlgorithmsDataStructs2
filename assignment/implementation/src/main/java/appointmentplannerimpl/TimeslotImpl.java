@@ -9,12 +9,12 @@ public class TimeslotImpl implements TimeSlot {
     private Instant start;
     private Instant end;
 
-    public TimeslotImpl(Instant start, Instant end){
+    public TimeslotImpl(Instant start, Instant end) {
         this.start = start;
         this.end = end;
     }
 
-    public Duration duration(){
+    public Duration duration() {
         return Duration.between(start, end);
     }
 
