@@ -1,6 +1,6 @@
 package appointmentplannerimpl;
 
-public class LinkedList<T> {
+public class LinkedListMine<T> {
     Node<T> head = null;
     Node<T> tail = null;
     private int size;

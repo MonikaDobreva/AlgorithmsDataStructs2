@@ -11,7 +11,11 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public class TimelineImpl implements Timeline {
-    private LinkedList<TimeslotImpl> list;
+    private LinkedListMine<TimeslotImpl> list;
+
+    public TimelineImpl(){
+        this.list = new LinkedListMine<>();
+    }
 
     @Override
     public int getNrOfAppointments() {
@@ -20,7 +24,7 @@ public class TimelineImpl implements Timeline {
 
     @Override
     public Instant start() {
-        return null;
+        return this.list.head.t.getStart();
     }
 
     @Override
