@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 
 public class TimelineImpl implements Timeline {
 
+
     @Override
     public int getNrOfAppointments() {
         return 0;
