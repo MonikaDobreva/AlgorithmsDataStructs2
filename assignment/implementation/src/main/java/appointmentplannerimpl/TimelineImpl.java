@@ -29,7 +29,7 @@ public class TimelineImpl implements Timeline {
 
     @Override
     public Instant end() {
-        return null;
+        return this.list.tail.t.getEnd();
     }
 
     @Override
