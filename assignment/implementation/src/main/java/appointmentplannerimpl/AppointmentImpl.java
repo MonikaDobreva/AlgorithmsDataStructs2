@@ -10,14 +10,6 @@ import java.util.TimeZone;
 
 public class AppointmentImpl implements Appointment {
 
-
-
-
-
-
-
-
-
     @Override
     public Duration getDuration() {
         return null;

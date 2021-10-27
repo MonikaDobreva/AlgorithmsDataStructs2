@@ -11,20 +11,6 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public class TimelineImpl implements Timeline {
-    private Node<Appointment> list;
-
-    private static class Node<E>{
-        E item;
-        Node<E> next;
-        Node(E item){
-            this.item = item;
-            next = null;
-        }
-    }
-
-    public TimelineImpl(){
-        this.list = new Node<>(null);
-    }
 
     @Override
     public int getNrOfAppointments() {

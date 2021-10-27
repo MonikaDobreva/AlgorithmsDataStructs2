@@ -12,10 +12,7 @@ import appointmentplanner.api.Priority;
 import appointmentplanner.api.TimePreference;
 import appointmentplanner.api.TimeSlot;
 import appointmentplanner.api.Timeline;
-import appointmentplannerimpl.AppointmentDataImpl;
-import appointmentplannerimpl.AppointmentImpl;
-import appointmentplannerimpl.AppointmentRequestImpl;
-import appointmentplannerimpl.LocalDayPlanImpl;
+import appointmentplannerimpl.*;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -51,14 +48,13 @@ public class APFactory implements AbstractAPFactory {
 
     @Override
     public AppointmentData createAppointmentData( String description, Duration duration ) {
-        AppointmentDataImpl ad = new AppointmentDataImpl(description, duration);
-        return null;
+         return new AppointmentDataImpl(description, duration);
+
     }
 
     @Override
     public AppointmentData createAppointmentData( String description, Duration duration, Priority priority ) {
-        AppointmentDataImpl ad = new AppointmentDataImpl(description, duration, priority);
-        return null;
+        return new AppointmentDataImpl(description, duration, priority);
     }
 
     @Override
@@ -68,7 +64,6 @@ public class APFactory implements AbstractAPFactory {
 
     @Override
     public TimeSlot between( Instant start, Instant end ) {
-        //TODO return proper instance
-        return null;
+        return new TimeslotImpl(start, end) ;
     }
 }

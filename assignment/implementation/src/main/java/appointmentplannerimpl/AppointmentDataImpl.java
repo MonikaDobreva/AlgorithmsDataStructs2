@@ -23,12 +23,6 @@ public class AppointmentDataImpl implements AppointmentData {
         this.priority = DEFAULT_PRIORITY;
     }
 
-    public AppointmentDataImpl(AppointmentData appData) {
-        this.description = appData.getDescription();
-        this.duration = appData.getDuration();
-        this.priority = appData.getPriority();
-    }
-
     @Override
     public Duration getDuration() {
         return this.duration;
