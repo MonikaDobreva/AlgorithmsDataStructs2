@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 public class TimelineImpl implements Timeline {
     private LinkedListMine<TimeslotImpl> list;
 
-    public TimelineImpl(){
+    public TimelineImpl() {
         this.list = new LinkedListMine<>();
     }
 
