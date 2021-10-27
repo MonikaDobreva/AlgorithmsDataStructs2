@@ -9,9 +9,9 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 
 public class LocalDayPlanImpl implements LocalDayPlan {
-    private final LocalDay day;
-    private final Instant start;
-    private final Instant end;
+    private LocalDay day;
+    private Instant start;
+    private Instant end;
 
     public LocalDayPlanImpl(LocalDay day, Instant start, Instant end){
         this.day = day;
@@ -39,6 +39,7 @@ public class LocalDayPlanImpl implements LocalDayPlan {
 
     @Override
     public Timeline getTimeline() {
+        TimeslotImpl t = new TimeslotImpl(this.start, this.end);
         return null;
     }
 }
