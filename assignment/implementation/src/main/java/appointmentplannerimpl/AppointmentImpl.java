@@ -10,54 +10,50 @@ import java.util.TimeZone;
 
 public class AppointmentImpl implements Appointment {
 
+    private AppointmentRequestImpl ar;
+
+    public AppointmentImpl(AppointmentRequestImpl ar) {
+        this.ar = ar;
+    }
+
     @Override
     public Duration getDuration() {
-        return null;
+        return this.ar.getDuration();
     }
 
     @Override
     public String getDescription() {
-        return null;
+        return this.ar.getDescription();
     }
 
     @Override
     public Priority getPriority() {
-        return null;
+        return this.ar.getPriority();
     }
 
     @Override
     public AppointmentData getAppointmentData() {
-        return this;
+        return this.ar.getAppointmentData();
     }
 
     @Override
     public AppointmentRequest getRequest() {
-        return null;
+        return this.ar;
     }
 
     @Override
     public Instant getStart() {
-//        LocalDateTime.of();
-//        return ZonedDateTime.of(this.ar.getStartTime(), TimeZone.getTimeZone("WET").toZoneId()).toInstant();
-        return null;
+        return LocalDay.now().ofLocalTime(this.ar.getStartTime());
     }
 
     @Override
     public Instant getEnd() {
-        return null;
+        return LocalDay.now().ofLocalTime(this.ar.getStartTime().plus(this.ar.getDuration()));
     }
-
-    //returns startTime,
-    // * endTime, description and priority like: "2019-09-12 14:00 - 15:55 ALDA Lesson
-    // * (HIGH)"
 
     @Override
     public String toString() {
-//        return "AppointmentImpl{" +
-//                "duration=" + duration +
-//                ", priority=" + priority +
-//                ", description='" + description + '\'' +
-//                '}';
-        return null;
+        return "Priority:" + getPriority();
+
     }
 }

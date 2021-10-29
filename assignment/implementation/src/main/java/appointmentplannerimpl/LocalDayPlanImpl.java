@@ -12,11 +12,16 @@ public class LocalDayPlanImpl implements LocalDayPlan {
     private LocalDay day;
     private Instant start;
     private Instant end;
+    private TimelineImpl timeline;
 
     public LocalDayPlanImpl(LocalDay day, Instant start, Instant end) {
         this.day = day;
         this.start = start;
         this.end = end;
+        this.timeline = new TimelineImpl();
+        TimeslotImpl t = new TimeslotImpl(this.start, this.end);
+        this.timeline.list().addNode(t);
+
     }
 
     @Override
@@ -39,7 +44,6 @@ public class LocalDayPlanImpl implements LocalDayPlan {
 
     @Override
     public Timeline getTimeline() {
-        TimeslotImpl t = new TimeslotImpl(this.start, this.end);
-        return null;
+        return this.timeline;
     }
 }

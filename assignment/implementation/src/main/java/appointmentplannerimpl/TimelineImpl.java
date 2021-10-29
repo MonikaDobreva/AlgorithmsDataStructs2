@@ -17,6 +17,10 @@ public class TimelineImpl implements Timeline {
         this.list = new LinkedListMine<>();
     }
 
+    public LinkedListMine list(){
+        return this.list;
+    }
+
     @Override
     public int getNrOfAppointments() {
         return 0;
@@ -34,6 +38,14 @@ public class TimelineImpl implements Timeline {
 
     @Override
     public Optional<Appointment> addAppointment(LocalDay forDay, AppointmentData appointment, TimePreference timepreference) {
+        if (appointment == null){
+            throw new NullPointerException("Appointment Data is empty!");
+        }
+        if (appointment.getDuration().toMinutes() > 1440){
+            return null;
+        }
+
+
         return Optional.empty();
     }
 
