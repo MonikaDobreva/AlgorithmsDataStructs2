@@ -46,6 +46,10 @@ public class TimelineImpl implements Timeline {
             return null;
         }
         if (this.list.getSize()<=1){
+            LocalDayPlanImpl localPlan = new LocalDayPlanImpl(forDay, start(), end());
+            Instant end = LocalDay.now().ofLocalTime(LocalTime.of(appointment.getDuration().toHours(),));
+            appointment.getDuration().toMinutes();
+            this.list.addNode();
             return AppointmentImpl
         }
 
