@@ -11,14 +11,14 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public class TimelineImpl implements Timeline {
-    private LinkedListMine<TimeslotImpl> list;
+    private DoublyLinkedList<TimeslotImpl> list;
     private int nrApp = 0;
 
     public TimelineImpl() {
-        this.list = new LinkedListMine<>();
+        this.list = new DoublyLinkedList<>();
     }
 
-    public LinkedListMine list(){
+    public DoublyLinkedList list(){
         return this.list;
     }
 
