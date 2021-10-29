@@ -44,6 +44,9 @@ public class TimelineImpl implements Timeline {
         if (appointment.getDuration().toMinutes() > 1440){
             return null;
         }
+        if (this.list.getSize()<=1){
+            return AppointmentImpl
+        }
 
 
         return Optional.empty();
