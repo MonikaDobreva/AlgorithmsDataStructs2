@@ -24,7 +24,6 @@ public class LocalDayPlanImpl implements LocalDayPlan {
         this.timeline = new TimelineImpl();
         TimeslotImpl t = new TimeslotImpl(this.start, this.end);
         this.timeline.list().addNode(t);
-
     }
 
     public LocalDayPlanImpl(LocalDay day) {
