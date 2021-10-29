@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 
 public class TimelineImpl implements Timeline {
     private LinkedListMine<TimeslotImpl> list;
+    private int nrApp = 0;
 
     public TimelineImpl() {
         this.list = new LinkedListMine<>();
