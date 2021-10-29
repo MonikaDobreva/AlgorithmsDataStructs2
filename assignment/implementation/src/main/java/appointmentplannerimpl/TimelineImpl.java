@@ -46,7 +46,6 @@ public class TimelineImpl implements Timeline {
             return Optional.empty();
         }
         if (this.list.getSize()<=1){
-            LocalDayPlanImpl localPlan = new LocalDayPlanImpl(forDay, start(), end());
             Instant end;
             Instant start;
             if (timepreference == TimePreference.EARLIEST){
