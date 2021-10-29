@@ -43,14 +43,30 @@ public class TimelineImpl implements Timeline {
             throw new NullPointerException("Appointment Data is empty!");
         }
         if (appointment.getDuration().toMinutes() > 1440){
-            return null;
+            return Optional.empty();
         }
         if (this.list.getSize()<=1){
             LocalDayPlanImpl localPlan = new LocalDayPlanImpl(forDay, start(), end());
-            Instant end = LocalDay.now().ofLocalTime(LocalTime.of(appointment.getDuration().toHours(),));
-            appointment.getDuration().toMinutes();
-            this.list.addNode();
-            return AppointmentImpl
+            Instant end;
+            Instant start;
+            if (timepreference == TimePreference.EARLIEST){
+                end = start().plusSeconds(appointment.getDuration().toSeconds());
+                TimeslotImpl t = new TimeslotImpl(start(), end);
+                this.list.addNode(t);
+                this.nrApp++;
+                LocalTime startAr = LocalTime.ofInstant(start(), forDay.getZone());
+                AppointmentRequestImpl ar = new AppointmentRequestImpl(appointment, startAr, timepreference);
+                return Optional.of(new AppointmentImpl(ar));
+            } else if (timepreference == TimePreference.LATEST){
+                start = end().minusSeconds(appointment.getDuration().toSeconds());
+                TimeslotImpl t = new TimeslotImpl(start, end());
+                this.list.addNode(t);
+                this.nrApp++;
+                LocalTime startAr = LocalTime.ofInstant(start, forDay.getZone());
+                AppointmentRequestImpl ar = new AppointmentRequestImpl(appointment, startAr, timepreference);
+                return Optional.of(new AppointmentImpl(ar));
+            }
+            return Optional.empty();
         }
 
 
