@@ -14,7 +14,7 @@ public class LocalDayPlanImpl implements LocalDayPlan {
     private Instant start;
     private Instant end;
     private TimelineImpl timeline;
-    private Instant defaultStart = LocalDay.now().ofLocalTime(LocalTime.of(0,0));
+    private Instant defaultStart = LocalDay.now().ofLocalTime(LocalTime.of(0, 0));
     private Instant defaultEnd = LocalDay.now().ofLocalTime(LocalTime.of(23, 59, 59));
 
     public LocalDayPlanImpl(LocalDay day, Instant start, Instant end) {
@@ -27,7 +27,7 @@ public class LocalDayPlanImpl implements LocalDayPlan {
 
     }
 
-    public LocalDayPlanImpl(LocalDay day){
+    public LocalDayPlanImpl(LocalDay day) {
         this.day = day;
         this.start = this.defaultStart;
         this.end = this.defaultEnd;
