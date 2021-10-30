@@ -80,6 +80,7 @@ public class TimelineImpl implements Timeline {
             return Optional.empty();
         }
         if (this.list.getSize() > 0){
+            Duration dur = Duration.between(this.start, this.end);
 
         }
 
@@ -131,6 +132,8 @@ public class TimelineImpl implements Timeline {
 
     @Override
     public boolean canAddAppointmentOfDuration(Duration duration) {
+        Duration dur = Duration.between(this.start, this.end);
+
         return false;
     }
 
