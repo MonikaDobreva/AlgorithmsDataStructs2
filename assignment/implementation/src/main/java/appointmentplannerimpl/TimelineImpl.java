@@ -13,8 +13,20 @@ import java.util.stream.Stream;
 public class TimelineImpl implements Timeline {
     private DoublyLinkedList<TimeslotImpl> list;
     private int nrApp = 0;
+    private Instant start;
+    private Instant end;
+    private final Instant defaultStart = LocalDay.now().ofLocalTime(LocalTime.of(0,0));
+    private final Instant defaultEnd = LocalDay.now().ofLocalTime(LocalTime.of(23,59,59));
 
-    public TimelineImpl() {
+    public TimelineImpl(Instant start, Instant end) {
+        this.start = start;
+        this.end = end;
+        this.list = new DoublyLinkedList<>();
+    }
+
+    public TimelineImpl(){
+        this.start = this.defaultStart;
+        this.end = this.defaultEnd;
         this.list = new DoublyLinkedList<>();
     }
 
@@ -40,32 +52,35 @@ public class TimelineImpl implements Timeline {
     @Override
     public Optional<Appointment> addAppointment(LocalDay forDay, AppointmentData appointment, TimePreference timepreference) {
         if (appointment == null){
-            throw new NullPointerException("Appointment Data is empty!");
+            throw new NullPointerException("Appointment Data is empty! line 54");
         }
         if (appointment.getDuration().toMinutes() > 1440){
             return Optional.empty();
         }
-        if (this.list.getSize()<=1){
-            Instant end;
-            Instant start;
+        if (this.list.getSize() == 0){
+            Instant endApp;
+            Instant startApp;
             if (timepreference == TimePreference.EARLIEST){
-                end = start().plusSeconds(appointment.getDuration().toSeconds());
-                TimeslotImpl t = new TimeslotImpl(start(), end);
+                endApp = start().plusSeconds(appointment.getDuration().toSeconds());
+                TimeslotImpl t = new TimeslotImpl(start(), endApp);
                 this.list.addNode(t);
                 this.nrApp++;
                 LocalTime startAr = LocalTime.ofInstant(start(), forDay.getZone());
                 AppointmentRequestImpl ar = new AppointmentRequestImpl(appointment, startAr, timepreference);
                 return Optional.of(new AppointmentImpl(ar));
             } else if (timepreference == TimePreference.LATEST){
-                start = end().minusSeconds(appointment.getDuration().toSeconds());
-                TimeslotImpl t = new TimeslotImpl(start, end());
+                startApp = end().minusSeconds(appointment.getDuration().toSeconds());
+                TimeslotImpl t = new TimeslotImpl(startApp, end());
                 this.list.addNode(t);
                 this.nrApp++;
-                LocalTime startAr = LocalTime.ofInstant(start, forDay.getZone());
+                LocalTime startAr = LocalTime.ofInstant(startApp, forDay.getZone());
                 AppointmentRequestImpl ar = new AppointmentRequestImpl(appointment, startAr, timepreference);
                 return Optional.of(new AppointmentImpl(ar));
             }
             return Optional.empty();
+        }
+        if (this.list.getSize() > 0){
+
         }
 
 
@@ -105,6 +120,7 @@ public class TimelineImpl implements Timeline {
 
     @Override
     public boolean contains(Appointment appointment) {
+
         return false;
     }
 

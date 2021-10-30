@@ -21,18 +21,14 @@ public class LocalDayPlanImpl implements LocalDayPlan {
         this.day = day;
         this.start = start;
         this.end = end;
-        this.timeline = new TimelineImpl();
-        TimeslotImpl t = new TimeslotImpl(this.start, this.end);
-        this.timeline.list().addNode(t);
+        this.timeline = new TimelineImpl(start, end);
     }
 
     public LocalDayPlanImpl(LocalDay day) {
         this.day = day;
         this.start = this.defaultStart;
         this.end = this.defaultEnd;
-        this.timeline = new TimelineImpl();
-        TimeslotImpl t = new TimeslotImpl(this.start, this.end);
-        this.timeline.list().addNode(t);
+        this.timeline = new TimelineImpl(start, end);
     }
 
 
