@@ -13,7 +13,7 @@ public class AllocationNode<T> {
     public void setNext(AllocationNode<T> next){
         this.next = next;
     }
-    //setting the prevoius item
+    //setting the previous item
     public void setPrevious(AllocationNode<T> prev){
         this.previous = prev;
     }
@@ -24,5 +24,14 @@ public class AllocationNode<T> {
 
     public AllocationNode<T> getPrevious(){
         return this.previous;
+    }
+
+    //setting the item in the node
+    public void setT(T t){
+        this.t = t;
+    }
+    //getting the item in the node
+    public T getT(){
+        return this.t;
     }
 }
