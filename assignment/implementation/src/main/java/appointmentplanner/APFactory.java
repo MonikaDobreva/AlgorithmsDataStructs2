@@ -33,10 +33,7 @@ public class APFactory implements AbstractAPFactory {
 
     @Override
     public LocalDayPlan createLocalDayPlan(ZoneId zone, LocalDate date, Timeline timeline) {
-        LocalDay day = new LocalDay(zone, date);
-        Instant start = timeline.start();
-        Instant end = timeline.end();
-        return new LocalDayPlanImpl(day, start, end);
+        return new LocalDayPlanImpl(zone, date, timeline);
     }
 
     @Override

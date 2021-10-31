@@ -11,26 +11,20 @@ import java.time.ZoneId;
 
 public class LocalDayPlanImpl implements LocalDayPlan {
     private LocalDay day;
-    private Instant start;
-    private Instant end;
-    private TimelineImpl timeline;
-    private Instant defaultStart = LocalDay.now().ofLocalTime(LocalTime.of(0, 0));
-    private Instant defaultEnd = LocalDay.now().ofLocalTime(LocalTime.of(23, 59, 59));
+    private Timeline timeline;
 
     public LocalDayPlanImpl(LocalDay day, Instant start, Instant end) {
-        this.day = day;
-        this.start = start;
-        this.end = end;
+        if (end.isBefore(start)){
+            throw new IllegalArgumentException("The end must be after the start!");
+        }
         this.timeline = new TimelineImpl(start, end);
+        this.day = day;
     }
 
-    public LocalDayPlanImpl(LocalDay day) {
-        this.day = day;
-        this.start = this.defaultStart;
-        this.end = this.defaultEnd;
-        this.timeline = new TimelineImpl(start, end);
+    public LocalDayPlanImpl(ZoneId zoneID, LocalDate date, Timeline timeline){
+        this.day = new LocalDay(zoneID, date);
+        this.timeline = timeline;
     }
-
 
     @Override
     public LocalDay getDay() {
@@ -39,15 +33,12 @@ public class LocalDayPlanImpl implements LocalDayPlan {
 
     @Override
     public Instant earliest() {
-        if (this.start.isBefore(Instant.now())) {
-            return Instant.now();
-        }
-        return this.start;
+        return this.timeline.start();
     }
 
     @Override
     public Instant tooLate() {
-        return this.end.plusMillis(1);
+        return this.timeline.end();
     }
 
     @Override
