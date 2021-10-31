@@ -6,6 +6,7 @@ import appointmentplanner.api.Priority;
 import appointmentplanner.api.TimePreference;
 
 import java.time.LocalTime;
+import java.util.Objects;
 
 public class AppointmentRequestImpl implements AppointmentRequest {
     private LocalTime prefStart;
@@ -13,7 +14,14 @@ public class AppointmentRequestImpl implements AppointmentRequest {
     private AppointmentData appointmentData;
 
 
-    public AppointmentRequestImpl(AppointmentData appointmentData, LocalTime prefStart, TimePreference fallBack) {
+    public AppointmentRequestImpl(AppointmentData appointmentData, LocalTime prefStart, TimePreference fallBack) throws IllegalArgumentException {
+        if (appointmentData == null){
+            throw new IllegalArgumentException("There must be an appointment for the request!");
+        }
+        //usage of default TimePreference
+        if (fallBack == null){
+            fallBack = TimePreference.UNSPECIFIED;
+        }
         this.appointmentData = appointmentData;
         this.prefStart = prefStart;
         this.fallback = fallBack;
@@ -37,5 +45,23 @@ public class AppointmentRequestImpl implements AppointmentRequest {
     @Override
     public AppointmentData getAppointmentData() {
         return this.appointmentData;
+    }
+
+    @Override
+    public TimePreference getTimePreference(){
+        return this.fallback;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AppointmentRequestImpl that = (AppointmentRequestImpl) o;
+        return prefStart.equals(that.prefStart) && fallback == that.fallback && appointmentData.equals(that.appointmentData);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(prefStart, fallback, appointmentData);
     }
 }

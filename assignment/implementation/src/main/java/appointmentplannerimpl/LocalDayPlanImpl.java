@@ -13,7 +13,7 @@ public class LocalDayPlanImpl implements LocalDayPlan {
     private LocalDay day;
     private Timeline timeline;
 
-    public LocalDayPlanImpl(LocalDay day, Instant start, Instant end) {
+    public LocalDayPlanImpl(LocalDay day, Instant start, Instant end) throws IllegalArgumentException {
         if (end.isBefore(start)){
             throw new IllegalArgumentException("The end must be after the start!");
         }
