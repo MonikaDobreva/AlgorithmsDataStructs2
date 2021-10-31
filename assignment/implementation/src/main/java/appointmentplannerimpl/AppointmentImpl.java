@@ -12,7 +12,10 @@ public class AppointmentImpl implements Appointment {
 
     private AppointmentRequestImpl ar;
 
-    public AppointmentImpl(AppointmentRequestImpl ar) {
+    public AppointmentImpl(AppointmentRequestImpl ar) throws IllegalArgumentException {
+        if (ar == null){
+            throw new IllegalArgumentException("The request cannot be null!");
+        }
         this.ar = ar;
     }
 
