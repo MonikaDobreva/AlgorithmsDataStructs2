@@ -25,7 +25,7 @@ public class TimeslotImpl implements TimeSlot {
     }
 
     public Duration duration() {
-        return Duration.between(start, end);
+        return Duration.between(this.start, this.end);
     }
 
     @Override
