@@ -5,28 +5,21 @@ import appointmentplanner.api.*;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public class TimelineImpl implements Timeline {
-    private DoublyLinkedList<TimeslotImpl> list;
-    private int nrApp = 0;
+    private DoublyLinkedList<TimeSlot> list;
     private Instant start;
     private Instant end;
-    private final Instant defaultStart = LocalDay.now().ofLocalTime(LocalTime.of(0,0));
-    private final Instant defaultEnd = LocalDay.now().ofLocalTime(LocalTime.of(23,59,59));
 
     public TimelineImpl(Instant start, Instant end) {
         this.start = start;
         this.end = end;
-        this.list = new DoublyLinkedList<>();
-    }
-
-    public TimelineImpl(){
-        this.start = this.defaultStart;
-        this.end = this.defaultEnd;
         this.list = new DoublyLinkedList<>();
     }
 
@@ -41,12 +34,12 @@ public class TimelineImpl implements Timeline {
 
     @Override
     public Instant start() {
-        return this.list.head.t.getStart();
+        return this.start;
     }
 
     @Override
     public Instant end() {
-        return this.list.tail.t.getEnd();
+        return this.end;
     }
 
     @Override
@@ -64,7 +57,6 @@ public class TimelineImpl implements Timeline {
                 endApp = start().plusSeconds(appointment.getDuration().toSeconds());
                 TimeslotImpl t = new TimeslotImpl(start(), endApp);
                 this.list.addNode(t);
-                this.nrApp++;
                 LocalTime startAr = LocalTime.ofInstant(start(), forDay.getZone());
                 AppointmentRequestImpl ar = new AppointmentRequestImpl(appointment, startAr, timepreference);
                 return Optional.of(new AppointmentImpl(ar));
@@ -72,7 +64,6 @@ public class TimelineImpl implements Timeline {
                 startApp = end().minusSeconds(appointment.getDuration().toSeconds());
                 TimeslotImpl t = new TimeslotImpl(startApp, end());
                 this.list.addNode(t);
-                this.nrApp++;
                 LocalTime startAr = LocalTime.ofInstant(startApp, forDay.getZone());
                 AppointmentRequestImpl ar = new AppointmentRequestImpl(appointment, startAr, timepreference);
                 return Optional.of(new AppointmentImpl(ar));
@@ -81,6 +72,7 @@ public class TimelineImpl implements Timeline {
         }
         if (this.list.getSize() > 0){
             Duration dur = Duration.between(this.start, this.end);
+            Map<String, Optional<TimeSlot>> slotMap = new HashMap<>();
 
         }
 
