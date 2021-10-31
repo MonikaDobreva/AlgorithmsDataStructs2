@@ -6,6 +6,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.util.Objects;
 import java.util.TimeZone;
 
 public class AppointmentImpl implements Appointment {
@@ -58,5 +59,18 @@ public class AppointmentImpl implements Appointment {
     public String toString() {
         return "Priority:" + getPriority();
 
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AppointmentImpl that = (AppointmentImpl) o;
+        return ar.equals(that.ar);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(ar);
     }
 }
