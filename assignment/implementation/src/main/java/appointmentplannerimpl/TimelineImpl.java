@@ -29,7 +29,7 @@ public class TimelineImpl implements Timeline {
 
     @Override
     public int getNrOfAppointments(){
-        int nrApp = 0;
+        int nrApp = this.list.getSize();
         return nrApp;
     }
 
