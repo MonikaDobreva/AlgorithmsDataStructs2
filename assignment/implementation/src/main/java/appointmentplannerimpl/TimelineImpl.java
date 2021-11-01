@@ -108,7 +108,7 @@ public class TimelineImpl implements Timeline {
 
     @Override
     public Stream<Appointment> appointmentStream() {
-        return list.stream()
+        return this.list.stream()
                 .filter(timeSlot -> (timeSlot instanceof Appointment))
                 .map(Appointment.class::cast);
     }
