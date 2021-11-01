@@ -4,7 +4,9 @@ import appointmentplanner.api.*;
 import appointmentplannerimpl.AppointmentDataImpl;
 import appointmentplannerimpl.AppointmentRequestImpl;
 import appointmentplannerimpl.LocalDayPlanImpl;
+import appointmentplannerimpl.TimelineImpl;
 import org.junit.jupiter.api.Test;
+import static org.mockito.Mockito.mock;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.*;
@@ -18,30 +20,31 @@ public class APFactoryTest {
     //String description, Duration duration )
     private APFactory apf = new APFactory();
 
+    private Duration dur = Duration.ofMinutes(90);
+
     private ZoneId zone = ZoneId.systemDefault();
     private LocalDate date = LocalDate.now().plusWeeks(2);
-    // private Timeline timeline = ;
+    private Timeline timeline = mock(Timeline.class);
+    private AppointmentDataImpl ad = new AppointmentDataImpl("fishing", Duration.ofMinutes(90), Priority.MEDIUM);
+    private AppointmentDataImpl adi = new AppointmentDataImpl("dentist", Duration.ofHours(3), Priority.LOW);
+
     @Test
     public void createLocalDayPlanTest (){
-        //assertThat(apf.createLocalDayPlan())
-
-    }
-
-    @Test
-    public void createLocalDayPlanTest2() {
-        //assertThat(apf.createLocalDayPlan())
+        assertThat(apf.createLocalDayPlan(this.zone, this.date, this.timeline))
+                .isNotNull();
 
     }
 
     @Test
     public void createAppointmentDataTest() {
-        //assertThat(apf.createAppointmentData())
-
+        assertThat(apf.createAppointmentData("fishing", this.dur, Priority.MEDIUM))
+                .isEqualTo(this.ad);
     }
 
     @Test
     public void createAppointmentDataTest2() {
-        //assertThat(apf.createAppointmentData())
+        assertThat(apf.createAppointmentData("dentist", Duration.ofHours(3)))
+                .isEqualTo(this.adi);
 
     }
 
