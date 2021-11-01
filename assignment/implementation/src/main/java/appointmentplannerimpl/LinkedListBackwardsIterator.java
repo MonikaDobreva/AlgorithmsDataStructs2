@@ -13,11 +13,13 @@ public class LinkedListBackwardsIterator<T> implements Iterator {
 
     @Override
     public boolean hasNext() {
-        return false;
+        boolean prev = this.node.getPrevious() != this.head;
+        return prev;
     }
 
     @Override
     public Object next() {
-        return null;
+        this.node = this.node.getPrevious();
+        return this.node;
     }
 }
