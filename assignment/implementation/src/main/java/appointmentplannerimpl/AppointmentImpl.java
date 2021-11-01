@@ -12,11 +12,16 @@ import java.util.TimeZone;
 public class AppointmentImpl implements Appointment {
 
     private AppointmentRequestImpl ar;
+    private TimeSlot timeSlot;
 
-    public AppointmentImpl(AppointmentRequestImpl ar) throws IllegalArgumentException {
+    public AppointmentImpl(AppointmentRequestImpl ar, TimeSlot timeSlot) throws IllegalArgumentException {
         if (ar == null){
             throw new IllegalArgumentException("The request cannot be null!");
         }
+        if (timeSlot == null) {
+            throw new IllegalArgumentException("The time slot cannot be null!");
+        }
+        this.timeSlot = timeSlot;
         this.ar = ar;
     }
 

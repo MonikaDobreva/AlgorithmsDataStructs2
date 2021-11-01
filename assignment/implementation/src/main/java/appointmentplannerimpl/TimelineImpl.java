@@ -92,7 +92,6 @@ public class TimelineImpl implements Timeline {
 
     @Override
     public AppointmentRequest removeAppointment(Appointment appointment) {
-
         return null;
     }
 
