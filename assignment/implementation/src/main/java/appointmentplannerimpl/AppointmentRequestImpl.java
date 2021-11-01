@@ -57,11 +57,11 @@ public class AppointmentRequestImpl implements AppointmentRequest {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AppointmentRequestImpl that = (AppointmentRequestImpl) o;
-        return prefStart.equals(that.prefStart) && fallback == that.fallback && appointmentData.equals(that.appointmentData);
+        return appointmentData.equals(that.appointmentData) && prefStart.equals(that.prefStart) && fallback == that.fallback;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(prefStart, fallback, appointmentData);
+        return Objects.hash(appointmentData, prefStart, fallback);
     }
 }

@@ -27,35 +27,37 @@ public class APFactoryTest {
     private Timeline timeline = mock(Timeline.class);
     private AppointmentDataImpl ad = new AppointmentDataImpl("fishing", Duration.ofMinutes(90), Priority.MEDIUM);
     private AppointmentDataImpl adi = new AppointmentDataImpl("dentist", Duration.ofHours(3), Priority.LOW);
+    private AppointmentRequestImpl ar = new AppointmentRequestImpl(this.adi, LocalTime.now().plusHours(36), TimePreference.LATEST);
+    private Instant s = Instant.now().plusSeconds(360000);
+    private Instant e = Instant.now().plusSeconds(363600);
 
     @Test
     public void createLocalDayPlanTest (){
-        assertThat(apf.createLocalDayPlan(this.zone, this.date, this.timeline))
+        assertThat(this.apf.createLocalDayPlan(this.zone, this.date, this.timeline))
                 .isNotNull();
-
     }
 
     @Test
     public void createAppointmentDataTest() {
-        assertThat(apf.createAppointmentData("fishing", this.dur, Priority.MEDIUM))
+        assertThat(this.apf.createAppointmentData("fishing", this.dur, Priority.MEDIUM))
                 .isEqualTo(this.ad);
     }
 
     @Test
     public void createAppointmentDataTest2() {
-        assertThat(apf.createAppointmentData("dentist", Duration.ofHours(3)))
+        assertThat(this.apf.createAppointmentData("dentist", Duration.ofHours(3)))
                 .isEqualTo(this.adi);
-
     }
 
     @Test
     public void createAppointmentRequestTest() {
-        //assertThat(apf.createAppointmentRequest())
-
+        assertThat(this.apf.createAppointmentRequest(this.adi, LocalTime.now().plusHours(36), TimePreference.LATEST))
+                .isEqualTo(this.ar);
     }
 
     @Test
-    public void between(){
-
+    public void betweenTest(){
+        assertThat(this.apf.between(this.s, this.e).duration())
+                .isEqualTo(Duration.ofHours(1));
     }
 }

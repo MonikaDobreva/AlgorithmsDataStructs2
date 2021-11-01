@@ -60,14 +60,14 @@ public class TimelineImpl implements Timeline {
                 this.list.addNode(t);
                 LocalTime startAr = LocalTime.ofInstant(start(), forDay.getZone());
                 AppointmentRequestImpl ar = new AppointmentRequestImpl(appointment, startAr, timepreference);
-                return Optional.of(new AppointmentImpl(ar));
+                return Optional.of(new AppointmentImpl(ar, new TimeslotImpl(this.start, this.end)));
             } else if (timepreference == TimePreference.LATEST){
                 startApp = end().minusSeconds(appointment.getDuration().toSeconds());
                 TimeslotImpl t = new TimeslotImpl(startApp, end());
                 this.list.addNode(t);
                 LocalTime startAr = LocalTime.ofInstant(startApp, forDay.getZone());
                 AppointmentRequestImpl ar = new AppointmentRequestImpl(appointment, startAr, timepreference);
-                return Optional.of(new AppointmentImpl(ar));
+                return Optional.of(new AppointmentImpl(ar, new TimeslotImpl(this.start, this.end)));
             }
             return Optional.empty();
         }
