@@ -28,8 +28,9 @@ public class TimelineImpl implements Timeline {
     }
 
     @Override
-    public int getNrOfAppointments() {
-        return 0;
+    public int getNrOfAppointments(){
+        int nrApp = 0;
+        return nrApp;
     }
 
     @Override
