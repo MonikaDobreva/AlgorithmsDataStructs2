@@ -3,24 +3,31 @@ package appointmentplannerimpl;
 import java.util.Iterator;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import java.util.*;
 
 public class DoublyLinkedList<T> implements Iterable<T>{
     AllocationNode<T> head = null;
     AllocationNode<T> tail = null;
     private int size;
+    private Stream<T> stream(Iterator iterator) {
+        Spliterator<AllocationNode<T>> spliterator = Spliterators.spliteratorUnknownSize(
+                iterator, Spliterator.ORDERED);
+        return StreamSupport.stream(spliterator, false)
+                .map(node -> node.getT());
+    }
 
     public DoublyLinkedList(){
         //initialize head and tail
-        head = new AllocationNode<T>(null);
-        tail = new AllocationNode<T>(null);
+        this.head = new AllocationNode<T>(null);
+        this.tail = new AllocationNode<T>(null);
         //set head and tail to be the same
-        head.next = tail;
-        tail.previous = head;
+        this.head.next = this.tail;
+        this.tail.previous = this.head;
         //set head and tail to be the only thing in the list
-        head.previous = null;
+        this.head.previous = null;
         tail.next = null;
         //size of the list is 0 at this moment
-        size = 0;
+        this.size = 0;
     }
 
     public void addNode(T item) {
@@ -85,8 +92,20 @@ public class DoublyLinkedList<T> implements Iterable<T>{
         }
     }
 
+    public Stream<T> stream() {
+        return this.stream(iterator());
+    }
+
+    public Stream<T> streamBackwards() {
+        return this.stream(iteratorBackwards());
+    }
+
     @Override
     public Iterator<T> iterator() {
-        return null;
+        return new LinkedListIterator<T>(this.head,this.tail);
+    }
+
+    public Iterator<T> iteratorBackwards(){
+        return new LinkedListBackwardsIterator<T>(this.head, this.tail);
     }
 }
