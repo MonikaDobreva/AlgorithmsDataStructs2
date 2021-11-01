@@ -29,7 +29,7 @@ public class TimelineImpl implements Timeline {
 
     @Override
     public int getNrOfAppointments(){
-        int nrApp = this.list.getSize();
+        int nrApp = (int) appointmentStream().count();
         return nrApp;
     }
 
@@ -115,8 +115,8 @@ public class TimelineImpl implements Timeline {
 
     @Override
     public boolean contains(Appointment appointment) {
-
-        return false;
+        return this.appointmentStream()
+                .anyMatch((appSearch -> appSearch.equals(appointment)));
     }
 
     @Override
