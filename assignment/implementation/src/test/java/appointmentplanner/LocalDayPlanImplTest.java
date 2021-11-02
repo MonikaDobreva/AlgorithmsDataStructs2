@@ -47,4 +47,25 @@ public class LocalDayPlanImplTest {
             softly.assertThat(ldp.tooLate()).isEqualTo(end);
         });
     }
+
+    @ParameterizedTest
+    @CsvSource({
+            "00:01, 00:00"
+    })
+    public void ExceptionTest(String start, String end) {
+        var day = LocalDay.now();
+        Instant s = day.ofLocalTime(LocalTime.parse(start));
+        Instant e = day.ofLocalTime(LocalTime.parse(end));
+
+        ThrowableAssert.ThrowingCallable exceptionCode = () -> {
+            new LocalDayPlanImpl(
+                    day,
+                    s,
+                    e
+            );
+        };
+        assertThatCode(exceptionCode)
+                .isExactlyInstanceOf(IllegalArgumentException.class)
+                .hasMessage("The end must be after the start!");
+    }
 }
