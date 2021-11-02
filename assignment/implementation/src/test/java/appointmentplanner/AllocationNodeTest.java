@@ -38,6 +38,15 @@ public class AllocationNodeTest {
         assertThat(this.list.getHead().getNext())
                 .isEqualTo(node);
     }
+
+    @Test
+    public void setTmethodTest() {
+        this.list.toFront(this.timeSlot);
+        var node = this.list.getHead().getNext();
+        node.setT(this.timeslot);
+
+        assertThat(node.getT()).isEqualTo(this.timeslot);
+    }
 }
 
 

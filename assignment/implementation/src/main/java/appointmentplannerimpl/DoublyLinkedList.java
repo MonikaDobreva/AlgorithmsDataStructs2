@@ -145,5 +145,4 @@ public class DoublyLinkedList<T> implements Iterable<T>{
     public void toBack(T t) {
         addInFront(t, this.tail);
     }
-
 }
