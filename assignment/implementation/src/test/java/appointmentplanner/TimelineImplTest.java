@@ -56,4 +56,38 @@ public class TimelineImplTest {
         this.list.toFront(this.appointment);
         this.list.toFront(this.timeSlot);
     }
+
+    @Test
+    public void getNrOfAppointmentsTest() {
+        assertThat(this.noTimeline.getNrOfAppointments()).isEqualTo(1);
+    }
+
+    @Test
+    public void appointmentStreamTest() {
+        assertThat(this.noStream
+                .allMatch(timeSlot -> timeSlot instanceof Appointment)
+        ).isTrue();
+    }
+
+    @Test
+    public void appointmentStreamCountTest() {
+        assertThat(this.noStream.count()).isEqualTo(1);
+    }
+
+    @Test
+    public void containsTest() {
+        var contains = this.noTimeline.contains(this.appointment);
+        assertThat(contains).isTrue();
+    }
+
+    @Test
+    public void containsTest2() {
+        //create a boolean to check if an appointment is in the list (timeline)
+        var contains = this.noTimeline.contains(new AppointmentImpl( //obviously we are checking for a brand new appointment
+                mock(AppointmentRequest.class),
+                new TimeslotImpl(this.start, this.end)
+        ));
+        //so we want to receive the boolean as false
+        assertThat(contains).isFalse();
+    }
 }
