@@ -15,27 +15,27 @@ public class DataTest {
 
     @Test
     public void getDescriptionTest(){
-        assertThat(ad.getDescription())
+        assertThat(this.ad.getDescription())
                 .isEqualTo("interview");
 
     }
 
     @Test
     public void getPriorityTest(){
-        assertThat(ad.getPriority())
+        assertThat(this.ad.getPriority())
                 .isEqualTo(Priority.LOW);
     }
 
     @Test
     public void getDurationTest(){
-        assertThat(ad.getDuration())
-                .isEqualTo(duration);
+        assertThat(this.ad.getDuration())
+                .isEqualTo(this.duration);
     }
 
     @Test
     public void toStringTest(){
-        assertThat(ad.toString())
-                .isEqualTo("duration = " + duration +
+        assertThat(this.ad.toString())
+                .isEqualTo("duration = " + this.duration +
                         ", priority = " + Priority.LOW +
                         ", description = interview");
     }
