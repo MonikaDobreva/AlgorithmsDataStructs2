@@ -14,6 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AllocationNodeTest {
     private DoublyLinkedList<TimeSlot> list;
     private TimeslotImpl timeSlot = new TimeslotImpl(Instant.now(), Instant.now().plusSeconds(3600));
+    private TimeslotImpl timeslot = new TimeslotImpl(Instant.now(), Instant.now().plusSeconds(7200));
 
     @BeforeEach
     private void setUp() {
