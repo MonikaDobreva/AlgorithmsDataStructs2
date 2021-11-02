@@ -108,4 +108,42 @@ public class DoublyLinkedList<T> implements Iterable<T>{
     public Iterator<T> iteratorBackwards(){
         return new LinkedListBackwardsIterator<T>(this.head, this.tail);
     }
+
+    public void toFront(T t) {
+        addToBack(t, this.head);
+    }
+
+    public void addInFront(T t, T nextT) {
+        var nextAllocationNode = lookForNode(nextT);
+        addInFront(t, nextAllocationNode);
+    }
+
+    public void addInFront(T t, AllocationNode nextNode) {
+        //check if the input is not null
+        if (nextNode != null && t != null) {
+            //initialize a new node
+            AllocationNode anotherNode = new AllocationNode(t);
+            //the given node is set to be the next of the node created above
+            anotherNode.setNext(nextNode);
+            anotherNode.setPrevious(nextNode.previous);
+            anotherNode.previous.setNext(anotherNode);
+            nextNode.setPrevious(anotherNode);
+
+            this.size++;
+        }
+    }
+
+    public void addToBack(T t, T frontT) {
+        var frontNode = lookForNode(frontT);
+        addToBack(t, frontNode);
+    }
+
+    public void addToBack(T t, AllocationNode<T> backNode) {
+        addInFront(t, backNode.next);
+    }
+
+    public void toBack(T t) {
+        addInFront(t, this.tail);
+    }
+
 }
