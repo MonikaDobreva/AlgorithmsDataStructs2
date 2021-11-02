@@ -1,5 +1,6 @@
 package appointmentplannerimpl;
 
+import appointmentplanner.APFactory;
 import appointmentplanner.api.*;
 
 import java.time.Duration;
@@ -22,6 +23,18 @@ public class TimelineImpl implements Timeline {
         this.end = end;
         this.list = new DoublyLinkedList<>();
     }
+
+    public TimelineImpl(Instant start, Instant end, DoublyLinkedList<TimeSlot> list) {
+        this.start = start;
+        this.end = end;
+        this.list = list;
+
+        if (this.list.getSize() == 0) {
+            var fac = new APFactory();
+            this.list.toFront(fac.between(start, end));
+        }
+    }
+
 
     public DoublyLinkedList list(){
         return this.list;

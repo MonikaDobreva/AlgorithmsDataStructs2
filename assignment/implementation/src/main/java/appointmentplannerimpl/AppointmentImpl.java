@@ -11,10 +11,10 @@ import java.util.TimeZone;
 
 public class AppointmentImpl implements Appointment {
 
-    private AppointmentRequestImpl ar;
+    private AppointmentRequest ar;
     private TimeSlot timeSlot;
 
-    public AppointmentImpl(AppointmentRequestImpl ar, TimeSlot timeSlot) throws IllegalArgumentException {
+    public AppointmentImpl(AppointmentRequest ar, TimeSlot timeSlot) throws IllegalArgumentException {
         if (ar == null){
             throw new IllegalArgumentException("The request cannot be null!");
         }
