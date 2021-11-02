@@ -30,7 +30,7 @@ public class APFactoryTest {
     private AppointmentDataImpl adi = new AppointmentDataImpl("dentist", Duration.ofHours(3), Priority.LOW);
     private AppointmentRequestImpl ar = new AppointmentRequestImpl(this.adi, start, TimePreference.LATEST);
     private Instant s = Instant.now().plusSeconds(360000);
-    private Instant e = s.plusSeconds(363600);
+    private Instant e = s.plusSeconds(3600);
 
     @Test
     public void createLocalDayPlanTest (){
