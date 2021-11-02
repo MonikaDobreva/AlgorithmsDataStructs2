@@ -2,12 +2,15 @@ package appointmentplanner;
 
 import appointmentplanner.api.Priority;
 import appointmentplannerimpl.AppointmentDataImpl;
+import appointmentplannerimpl.TimeslotImpl;
+import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.Test;
 import static appointmentplanner.Tools.*;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 public class DataTest {
     private Duration duration = Duration.of(2, ChronoUnit.HOURS);
@@ -50,6 +53,16 @@ public class DataTest {
     @Test
     public void EqualsAndHashCodeTest() {
         appointmentplanner.Tools.testEqualsAndHashcode(this.first, this.same, this.theDuration, this.description, this.priority);
+    }
+
+    @Test
+    public void ExceptionTest() {
+        ThrowableAssert.ThrowingCallable constructor = () -> {
+            new AppointmentDataImpl("fishing", null, Priority.LOW);
+        };
+        assertThatCode(constructor)
+                .hasMessage("The parameters cannot be null!")
+                .isExactlyInstanceOf(IllegalArgumentException.class);
     }
 
 }

@@ -23,11 +23,12 @@ public class APFactoryTest {
     private Duration dur = Duration.ofMinutes(90);
 
     private ZoneId zone = ZoneId.systemDefault();
+    private LocalTime start = LocalTime.now().plusHours(36);
     private LocalDate date = LocalDate.now().plusWeeks(2);
     private Timeline timeline = mock(Timeline.class);
     private AppointmentDataImpl ad = new AppointmentDataImpl("fishing", Duration.ofMinutes(90), Priority.MEDIUM);
     private AppointmentDataImpl adi = new AppointmentDataImpl("dentist", Duration.ofHours(3), Priority.LOW);
-    private AppointmentRequestImpl ar = new AppointmentRequestImpl(this.adi, LocalTime.now().plusHours(36), TimePreference.LATEST);
+    private AppointmentRequestImpl ar = new AppointmentRequestImpl(this.adi, start, TimePreference.LATEST);
     private Instant s = Instant.now().plusSeconds(360000);
     private Instant e = s.plusSeconds(363600);
 
@@ -51,7 +52,7 @@ public class APFactoryTest {
 
     @Test
     public void createAppointmentRequestTest() {
-        assertThat(this.apf.createAppointmentRequest(this.adi, LocalTime.now().plusHours(36), TimePreference.LATEST))
+        assertThat(this.apf.createAppointmentRequest(this.adi, this.start, TimePreference.LATEST))
                 .isEqualTo(this.ar);
     }
 
