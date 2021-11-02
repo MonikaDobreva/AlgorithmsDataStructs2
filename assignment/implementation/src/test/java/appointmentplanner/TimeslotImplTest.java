@@ -1,8 +1,10 @@
 package appointmentplanner;
 
 import appointmentplannerimpl.TimeslotImpl;
+import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -28,5 +30,15 @@ public class TimeslotImplTest {
     public void getEndTest() {
         assertThat(this.timeSlot.getEnd())
                 .isEqualTo(this.end);
+    }
+
+    @Test
+    public void ExceptionTest() {
+        ThrowableAssert.ThrowingCallable constructor = () -> {
+            new TimeslotImpl(this.end, this.start);
+        };
+        assertThatCode(constructor)
+                .hasMessage("The start must be before the end!")
+                .isExactlyInstanceOf(IllegalArgumentException.class);
     }
 }

@@ -18,7 +18,7 @@ public class TimeslotImpl implements TimeSlot {
             throw new IllegalArgumentException("The end cannot be null!");
         }
         if (end.isBefore(start)){
-            throw new IllegalArgumentException("The star must be before the end!");
+            throw new IllegalArgumentException("The start must be before the end!");
         }
         this.start = start;
         this.end = end;
