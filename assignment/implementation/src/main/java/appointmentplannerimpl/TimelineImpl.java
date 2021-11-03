@@ -98,7 +98,110 @@ public class TimelineImpl implements Timeline {
 
     @Override
     public Optional<Appointment> addAppointment(LocalDay forDay, AppointmentData appointment, LocalTime startTime, TimePreference fallback) {
-        return null;}
+        return Optional.empty();
+    }
+
+    private Map<String, TimeSlot> optionalToTimeSlot(Map<String, Optional<TimeSlot>> timeSlotOptMap) {
+        var timeSlotMap = new HashMap();
+        Optional<TimeSlot> timeSlotOpt;
+
+        if (timeSlotOptMap.containsKey("NextTimeSlot")) {
+            timeSlotOpt = timeSlotOptMap.get("NextTimeSlot");
+            if (!timeSlotOpt.isEmpty()) {
+                timeSlotMap.put("NextTimeSlot", timeSlotOpt.get());
+            } else {
+                timeSlotMap.put("NextTimeSlot", null);
+            }
+        }
+        timeSlotOpt = timeSlotOptMap.get("AppointmentSlot");
+        if (!timeSlotOpt.isEmpty()) {
+            timeSlotMap.put("AppointmentSlot", timeSlotOpt.get());
+        } else {
+            timeSlotMap.put("AppointmentSlot", null);
+        }
+
+        timeSlotOpt = timeSlotOptMap.get("OriginalTimeSlot");
+        if (!timeSlotOpt.isEmpty()) {
+            timeSlotMap.put("OriginalTimeSlot", timeSlotOpt.get());
+        } else {
+            timeSlotMap.put("OriginalTimeSlot", null);
+        }
+
+        if (timeSlotOptMap.containsKey("PreviousTimeSlot")) {
+            timeSlotOpt = timeSlotOptMap.get("PreviousTimeSlot");
+            if (!timeSlotOpt.isEmpty()) {
+                timeSlotMap.put("PreviousTimeSlot", timeSlotOpt.get());
+            } else {
+                timeSlotMap.put("PreviousTimeSlot", null);
+            }
+        }
+        return timeSlotMap;
+    }
+
+    Map<String, Optional<TimeSlot>> preferredTimeSlot(Duration appointmentDuration, LocalTime preferredTime, LocalDay localDay, TimePreference timePreference) {
+        List<TimeSlot> gapsFittingList = new ArrayList();
+
+        this.getGapsFitting(appointmentDuration).stream()
+                .filter(timeSlot -> timeSlot.fits(appointmentDuration))
+                .forEach(gapsFittingList::add);
+
+        var preferredSlot = gapsFittingList.stream()
+                .filter(timeSlot -> {
+                    var startTime = timeSlot.getStartTime(localDay);
+                    var endTime = timeSlot.getEndTime(localDay);
+                    var endTimeAppointment = preferredTime.plusMinutes(appointmentDuration.toMinutes());
+                    return (startTime.isBefore(preferredTime) || startTime.equals(preferredTime)) &&
+                            (endTime.isAfter(endTimeAppointment) || endTime.equals(endTimeAppointment));
+                })
+                .map(timeSlot -> new TimeslotImpl(localDay.ofLocalTime(preferredTime), localDay.ofLocalTime(preferredTime.plusMinutes(appointmentDuration.toMinutes()))))
+                .map(TimeSlot.class::cast)
+                .findAny();
+
+        if (preferredSlot.isEmpty()) {
+            if (timePreference == TimePreference.EARLIEST_AFTER) {
+                preferredSlot = gapsFittingList.stream()
+                        .filter(timeSlot ->
+                                timeSlot.getEndTime(localDay).minusMinutes(appointmentDuration.toMinutes()).isAfter(preferredTime)
+                        )
+                        .map(timeSlot -> new TimeslotImpl(timeSlot.getStart(), timeSlot.getStart().plusSeconds(appointmentDuration.toSeconds())))
+                        .map(TimeSlot.class::cast)
+                        .findFirst();
+
+            } else if (timePreference == TimePreference.LATEST_BEFORE) {
+                preferredSlot = gapsFittingList.stream()
+                        .filter(timeSlot ->
+                                timeSlot.getStartTime(localDay).plusMinutes(appointmentDuration.toMinutes()).isBefore(preferredTime)
+                        )
+                        .map(timeSlot -> new TimeslotImpl(timeSlot.getEnd().minusSeconds(appointmentDuration.toSeconds()), timeSlot.getEnd()))
+                        .map(TimeSlot.class::cast)
+                        .reduce((val1, val2) -> val2);
+
+            }
+        }
+        if (!preferredSlot.isEmpty()) {
+            var appointmentSlot = preferredSlot;
+            HashMap<String, Optional<TimeSlot>> returnMap = new HashMap();
+            returnMap.put("AppointmentSlot", preferredSlot);
+            returnMap.put("OriginalTimeSlot", gapsFittingList.stream()
+                    .filter(timeSlot -> (timeSlot.fits(appointmentSlot.get())))
+                    .findAny());
+
+            var nextStart = preferredSlot.get().getEnd();
+            var nextEnd = returnMap.get("OriginalTimeSlot").get().getEnd();
+            if (!(nextStart.isAfter(nextEnd) || nextStart.equals(nextEnd))) {
+                returnMap.put("NextTimeSlot", Optional.of(new TimeslotImpl(nextStart, nextEnd)));
+            }
+
+            var previousStart = returnMap.get("OriginalTimeSlot").get().getStart();
+            var previousEnd = preferredSlot.get().getStart();
+            if (!(previousStart.isAfter(previousEnd) || previousStart.equals(previousEnd))) {
+                returnMap.put("PreviousTimeSlot", Optional.of(new TimeslotImpl(previousStart, previousEnd)));
+            }
+
+            return returnMap;
+        }
+        return null;
+    }
 
     @Override
     public AppointmentRequest removeAppointment(Appointment appointment) {
@@ -162,5 +265,47 @@ public class TimelineImpl implements Timeline {
     @Override
     public List<TimeSlot> getMatchingFreeSlotsOfDuration(Duration minLength, List<Timeline> other) {
         return null;
+    }
+
+    public void putAppointment(Map<String, TimeSlot> timeSlotMap) {
+        var originalNode = this.list.lookForNode(timeSlotMap.get("OriginalTimeSlot"));
+        var nextTimeSlot = timeSlotMap.get("NextTimeSlot");
+        TimeSlot previousTimeSlot = null;
+        if (timeSlotMap.containsKey("PreviousTimeSlot")) {
+            previousTimeSlot = timeSlotMap.get("PreviousTimeSlot");
+        }
+        var appointment = timeSlotMap.get("AppointmentSlot");
+        if (appointment != null) {
+            if (nextTimeSlot == null) {
+                if (previousTimeSlot != null) {
+                    originalNode.setT(previousTimeSlot);
+                    this.list.addToBack((Appointment) appointment, previousTimeSlot);
+                    if (previousTimeSlot.getStart().equals(previousTimeSlot.getEnd())) {
+                        var appointmentNode = this.list.lookForNode(appointment);
+                        this.list.mergeNodesPrevious(appointmentNode, originalNode, appointment);
+                    }
+                } else {
+                    originalNode.setT(appointment);
+                }
+            } else {
+                originalNode.setT(nextTimeSlot);
+                this.list.addInFront((Appointment) appointment, nextTimeSlot);
+                if (previousTimeSlot != null) {
+                    this.list.addInFront(previousTimeSlot, appointment);
+                }
+                var appointmentNode = this.list.lookForNode(appointment);
+                if (nextTimeSlot.getStart().equals(nextTimeSlot.getEnd())) {
+                    this.list.mergeNodesNext(appointmentNode, originalNode, appointment);
+                }
+            }
+        }
+    }
+
+    private Optional<Appointment> buildAppointment(AppointmentData appointmentData, LocalTime localTime, TimePreference timePreference, TimeSlot timeSlot) {
+        var factory = new APFactory();
+        var appointmentRequest = factory.createAppointmentRequest(appointmentData, localTime, timePreference);
+        var appointmentTimeSlot = timeSlot;
+
+        return Optional.of(new AppointmentImpl(appointmentRequest, appointmentTimeSlot));
     }
 }
