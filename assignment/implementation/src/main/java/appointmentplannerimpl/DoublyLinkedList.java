@@ -145,4 +145,22 @@ public class DoublyLinkedList<T> implements Iterable<T>{
     public void toBack(T t) {
         addInFront(t, this.tail);
     }
+
+    public AllocationNode<T> mergeNodesNext(AllocationNode node, AllocationNode nextNode, T t) {
+        nextNode.setPrevious(null);
+        node.setNext(nextNode.getNext());
+        node.getNext().setPrevious(node);
+        nextNode.setNext(null);
+        node.setT(t);
+        return node;
+    }
+
+    public AllocationNode<T> mergeNodesPrevious(AllocationNode node, AllocationNode previousNode, T t) {
+        previousNode.setNext(null);
+        node.setPrevious(previousNode.getPrevious());
+        node.getPrevious().setNext(node);
+        previousNode.setPrevious(null);
+        node.setT(t);
+        return previousNode;
+    }
 }

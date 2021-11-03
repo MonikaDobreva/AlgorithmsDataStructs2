@@ -6,10 +6,7 @@ import appointmentplanner.api.*;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -101,8 +98,7 @@ public class TimelineImpl implements Timeline {
 
     @Override
     public Optional<Appointment> addAppointment(LocalDay forDay, AppointmentData appointment, LocalTime startTime, TimePreference fallback) {
-        return Optional.empty();
-    }
+        return null;}
 
     @Override
     public AppointmentRequest removeAppointment(Appointment appointment) {
@@ -116,7 +112,11 @@ public class TimelineImpl implements Timeline {
 
     @Override
     public List<Appointment> findAppointments(Predicate<Appointment> filter) {
-        return null;
+        var list = new ArrayList();
+        appointmentStream()
+                .filter(timeSlot -> filter.test(timeSlot))
+                .forEach(list::add);
+        return list;
     }
 
     @Override

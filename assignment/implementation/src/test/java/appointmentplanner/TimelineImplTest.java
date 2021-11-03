@@ -90,4 +90,12 @@ public class TimelineImplTest {
         //so we want to receive the boolean as false
         assertThat(contains).isFalse();
     }
+
+    @Test
+    public void findAppointments() {
+        var expected = this.timeline.addAppointment(this.localDay, this.appointmentData, TimePreference.UNSPECIFIED).get();
+        var actual = this.timeline.findAppointments(val -> val.equals(expected)).get(0);
+
+        assertThat(actual).isEqualTo(expected);
+    }
 }
