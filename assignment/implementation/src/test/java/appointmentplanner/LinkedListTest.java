@@ -17,13 +17,13 @@ public class LinkedListTest {
     }
 
     @Test
-    public void isEmptyTrue() {
+    public void getSizeTest() {
         assertThat(this.list.getSize())
             .isEqualTo(0);
     }
 
     @Test
-    public void isEmptyFalse() {
+    public void getSizeTest2() {
         this.list.toFront(mock(TimeSlot.class));
         assertThat(this.list.getSize())
                 .isNotEqualTo(0);
