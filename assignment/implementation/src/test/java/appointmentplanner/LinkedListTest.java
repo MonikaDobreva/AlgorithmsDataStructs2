@@ -54,7 +54,8 @@ public class LinkedListTest {
         this.list.toFront(mock(TimeSlot.class));
         this.list.removeNode(mock(TimeSlot.class));
 
-        assertThat(this.list.getSize()).isEqualTo(1);
+        assertThat(this.list.getSize())
+                .isEqualTo(1);
     }
 
     @Test
@@ -79,6 +80,26 @@ public class LinkedListTest {
             softly.assertThat(setInFrontNode.getPrevious().getNext()).isEqualTo(setInFrontNode);
             softly.assertThat(this.list.getSize()).isEqualTo(3);
         });
+    }
+
+    @Test
+    public void addInFrontTest2() {
+        var timeSlot = mock(TimeSlot.class);
+        this.list.toFront(timeSlot);
+        this.list.addInFront(null, timeSlot);
+
+        assertThat(this.list.getSize())
+                .isEqualTo(1);
+    }
+
+    @Test
+    public void addInFrontTest3() {
+        var timeSlot = mock(TimeSlot.class);
+        var setInFrontTimeSlot = mock(TimeSlot.class);
+        this.list.addInFront(setInFrontTimeSlot, timeSlot);
+
+        assertThat(this.list.getSize())
+                .isEqualTo(0);
     }
 
 
