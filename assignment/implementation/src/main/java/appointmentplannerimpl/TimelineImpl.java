@@ -400,7 +400,7 @@ public class TimelineImpl implements Timeline {
         var appointmentRequest = factory.createAppointmentRequest(appointmentData, localTime, timePreference);
         var appointmentTimeSlot = timeSlot;
 
-        return Optional.of(new AppointmentImpl(appointmentRequest, appointmentTimeSlot));
+        return Optional.of(new AppointmentImpl(appointmentData, appointmentRequest, appointmentTimeSlot));
     }
 
     Map<String, Optional<TimeSlot>> findPreferredTimeSlot(Duration appointmentDuration, LocalTime preferredTime, LocalDay localDay, TimePreference timePreference) {

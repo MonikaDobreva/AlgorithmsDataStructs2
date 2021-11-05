@@ -55,6 +55,7 @@ public class TimelineImplTest {
         when(this.appointmentData.getDuration()).thenReturn(Duration.ofMinutes(120));
 
         this.appointment = new AppointmentImpl(
+                mock(AppointmentData.class),
                 mock(AppointmentRequest.class),
                 mock(TimeSlot.class));
 
@@ -91,6 +92,7 @@ public class TimelineImplTest {
     public void containsTest2() {
         //create a boolean to check if an appointment is in the list (timeline)
         var contains = this.noTimeline.contains(new AppointmentImpl( //obviously we are checking for a brand new appointment
+                mock(AppointmentData.class),
                 mock(AppointmentRequest.class),
                 new TimeslotImpl(this.start, this.end)
         ));

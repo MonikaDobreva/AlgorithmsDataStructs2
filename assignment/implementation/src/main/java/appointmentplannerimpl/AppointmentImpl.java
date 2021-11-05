@@ -13,8 +13,12 @@ public class AppointmentImpl implements Appointment {
 
     private AppointmentRequest ar;
     private TimeSlot timeSlot;
+    private AppointmentData ad;
 
-    public AppointmentImpl(AppointmentRequest ar, TimeSlot timeSlot) throws IllegalArgumentException {
+    public AppointmentImpl(AppointmentData appointmentData, AppointmentRequest ar, TimeSlot timeSlot) throws IllegalArgumentException {
+        if (ad == null) {
+            throw new IllegalArgumentException("The data cannot be null!");
+        }
         if (ar == null){
             throw new IllegalArgumentException("The request cannot be null!");
         }
@@ -23,26 +27,27 @@ public class AppointmentImpl implements Appointment {
         }
         this.timeSlot = timeSlot;
         this.ar = ar;
+        this.ad = appointmentData;
     }
 
     @Override
     public Duration getDuration() {
-        return this.ar.getDuration();
+        return this.ad.getDuration();
     }
 
     @Override
     public String getDescription() {
-        return this.ar.getDescription();
+        return this.ad.getDescription();
     }
 
     @Override
     public Priority getPriority() {
-        return this.ar.getPriority();
+        return this.ad.getPriority();
     }
 
     @Override
     public AppointmentData getAppointmentData() {
-        return this.ar.getAppointmentData();
+        return this.ad;
     }
 
     @Override
@@ -52,18 +57,12 @@ public class AppointmentImpl implements Appointment {
 
     @Override
     public Instant getStart() {
-        return LocalDay.now().ofLocalTime(this.ar.getStartTime());
+        return this.timeSlot.getStart();
     }
 
     @Override
     public Instant getEnd() {
-        return LocalDay.now().ofLocalTime(this.ar.getStartTime().plus(this.ar.getDuration()));
-    }
-
-    @Override
-    public String toString() {
-        return "Priority:" + getPriority();
-
+        return this.timeSlot.getEnd();
     }
 
     @Override
@@ -71,11 +70,11 @@ public class AppointmentImpl implements Appointment {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AppointmentImpl that = (AppointmentImpl) o;
-        return ar.equals(that.ar);
+        return ad.equals(that.ad) && ar.equals(that.ar) && timeSlot.equals(that.timeSlot);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(ar);
+        return Objects.hash(ad, ar, timeSlot);
     }
 }
