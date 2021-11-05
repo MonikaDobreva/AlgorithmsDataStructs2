@@ -141,70 +141,6 @@ public class TimelineImpl implements Timeline {
         return timeSlotMap;
     }
 
-    Map<String, Optional<TimeSlot>> preferredTimeSlot(Duration appointmentDuration, LocalTime preferredTime, LocalDay localDay, TimePreference timePreference) {
-        List<TimeSlot> gapsFittingList = new ArrayList();
-
-        this.getGapsFitting(appointmentDuration).stream()
-                .filter(timeSlot -> timeSlot.fits(appointmentDuration))
-                .forEach(gapsFittingList::add);
-
-        var preferredSlot = gapsFittingList.stream()
-                .filter(timeSlot -> {
-                    var startTime = timeSlot.getStartTime(localDay);
-                    var endTime = timeSlot.getEndTime(localDay);
-                    var endTimeAppointment = preferredTime.plusMinutes(appointmentDuration.toMinutes());
-                    return (startTime.isBefore(preferredTime) || startTime.equals(preferredTime)) &&
-                            (endTime.isAfter(endTimeAppointment) || endTime.equals(endTimeAppointment));
-                })
-                .map(timeSlot -> new TimeslotImpl(localDay.ofLocalTime(preferredTime), localDay.ofLocalTime(preferredTime.plusMinutes(appointmentDuration.toMinutes()))))
-                .map(TimeSlot.class::cast)
-                .findAny();
-
-        if (preferredSlot.isEmpty()) {
-            if (timePreference == TimePreference.EARLIEST_AFTER) {
-                preferredSlot = gapsFittingList.stream()
-                        .filter(timeSlot ->
-                                timeSlot.getEndTime(localDay).minusMinutes(appointmentDuration.toMinutes()).isAfter(preferredTime)
-                        )
-                        .map(timeSlot -> new TimeslotImpl(timeSlot.getStart(), timeSlot.getStart().plusSeconds(appointmentDuration.toSeconds())))
-                        .map(TimeSlot.class::cast)
-                        .findFirst();
-
-            } else if (timePreference == TimePreference.LATEST_BEFORE) {
-                preferredSlot = gapsFittingList.stream()
-                        .filter(timeSlot ->
-                                timeSlot.getStartTime(localDay).plusMinutes(appointmentDuration.toMinutes()).isBefore(preferredTime)
-                        )
-                        .map(timeSlot -> new TimeslotImpl(timeSlot.getEnd().minusSeconds(appointmentDuration.toSeconds()), timeSlot.getEnd()))
-                        .map(TimeSlot.class::cast)
-                        .reduce((val1, val2) -> val2);
-
-            }
-        }
-        if (!preferredSlot.isEmpty()) {
-            var appointmentSlot = preferredSlot;
-            HashMap<String, Optional<TimeSlot>> returnMap = new HashMap();
-            returnMap.put("AppointmentSlot", preferredSlot);
-            returnMap.put("OriginalTimeSlot", gapsFittingList.stream()
-                    .filter(timeSlot -> (timeSlot.fits(appointmentSlot.get())))
-                    .findAny());
-
-            var nextStart = preferredSlot.get().getEnd();
-            var nextEnd = returnMap.get("OriginalTimeSlot").get().getEnd();
-            if (!(nextStart.isAfter(nextEnd) || nextStart.equals(nextEnd))) {
-                returnMap.put("NextTimeSlot", Optional.of(new TimeslotImpl(nextStart, nextEnd)));
-            }
-
-            var previousStart = returnMap.get("OriginalTimeSlot").get().getStart();
-            var previousEnd = preferredSlot.get().getStart();
-            if (!(previousStart.isAfter(previousEnd) || previousStart.equals(previousEnd))) {
-                returnMap.put("PreviousTimeSlot", Optional.of(new TimeslotImpl(previousStart, previousEnd)));
-            }
-            return returnMap;
-        }
-        return null;
-    }
-
     private List<TimeSlot> getGapsFitting(Duration duration, Stream<TimeSlot> timeslotStream) {
         var timeslotList = new ArrayList();
         timeslotStream.filter(timeSlot -> {
@@ -221,12 +157,50 @@ public class TimelineImpl implements Timeline {
 
     @Override
     public AppointmentRequest removeAppointment(Appointment appointment) {
+        Predicate<Appointment> equalsPredicate = app1 -> app1.equals(appointment);
+        var appointments = removeAppointments(equalsPredicate);
+        if (appointments.size() > 0) {
+            return appointments.get(0);
+        }
         return null;
     }
 
     @Override
     public List<AppointmentRequest> removeAppointments(Predicate<Appointment> filter) {
-        return null;
+        var returnList = new ArrayList();
+        stream()
+                .map(timeSlot -> {
+                    if (!(timeSlot instanceof Appointment)) {
+                    } else if (filter.test((Appointment) timeSlot)) {
+                        returnList.add(((Appointment) timeSlot).getRequest());
+                        var factory = new APFactory();
+                        var timeSlotNode = this.list.lookForTNode(timeSlot);
+                        var timeSlotNodePrevious = timeSlotNode.getPrevious();
+                        var timeSlotNodeNext = timeSlotNode.getNext();
+                        Instant startPoint = timeSlotNode.getT().getStart();
+                        Instant endPoint = timeSlotNode.getT().getEnd();
+                        var mergedNodes = false;
+
+                        if (!(timeSlotNodePrevious.getT() instanceof Appointment) && timeSlotNodePrevious.getT() instanceof TimeSlot) {
+                            startPoint = timeSlotNodePrevious.getT().getStart();
+                            var tempNode = this.list.mergeNodesPrevious(timeSlotNode, timeSlotNodePrevious, factory.between(startPoint, endPoint));
+                            mergedNodes = true;
+                        }
+                        if (!(timeSlotNodeNext.getT() instanceof Appointment) && timeSlotNodeNext.getT() instanceof TimeSlot) {
+                            endPoint = timeSlotNodeNext.getT().getEnd();
+                            timeSlotNode = this.list.mergeNodesNext(timeSlotNode, timeSlotNodeNext, factory.between(startPoint, endPoint));
+                            mergedNodes = true;
+                        }
+                        if (!mergedNodes) {
+                            timeSlotNode.setT(factory.between(startPoint, endPoint));
+                        }
+                        return timeSlotNode.getT();
+                    }
+                    return null;
+                })
+                .count();
+
+        return returnList;
     }
 
     @Override
