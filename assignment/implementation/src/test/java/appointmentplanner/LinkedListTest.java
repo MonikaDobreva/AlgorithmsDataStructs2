@@ -59,6 +59,35 @@ public class LinkedListTest {
     }
 
     @Test
+    public void toFrontTest() {
+        var timeslot = mock(TimeSlot.class);
+        var timeslot2 = mock(TimeSlot.class);
+        this.list.toFront(timeslot);
+        this.list.toFront(timeslot2);
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(this.list.getHead().getNext().getT()).isEqualTo(timeslot2);
+            softly.assertThat(this.list.getTail().getPrevious().getT()).isEqualTo(timeslot);
+            softly.assertThat(this.list.getSize()).isEqualTo(2);
+        });
+    }
+
+    @Test
+    public void toBackTest() {
+        var timeslot = mock(TimeSlot.class);
+        var timeslot2 = mock(TimeSlot.class);
+        this.list.toBack(timeslot);
+        this.list.toBack(timeslot2);
+
+        SoftAssertions.assertSoftly(softly -> {
+                    softly.assertThat(this.list.getHead().getNext().getT()).isEqualTo(timeslot);
+                    softly.assertThat(this.list.getTail().getPrevious().getT()).isEqualTo(timeslot2);
+                    softly.assertThat(this.list.getSize()).isEqualTo(2);
+                }
+        );
+    }
+
+    @Test
     public void iteratorTest() {
         var iterator = this.list.iterator();
         assertThat(iterator)
@@ -205,7 +234,7 @@ public class LinkedListTest {
     }
 
     @Test
-    public void mergeNodesNext() {
+    public void mergeNodesNextTest() {
         var t = mock(TimeSlot.class);
         var t2 = mock(Appointment.class);
         var t3 = mock(TimeSlot.class);
@@ -228,6 +257,23 @@ public class LinkedListTest {
             softly.assertThat(node.getPrevious()).isNotNull();
             softly.assertThat(node2.getNext()).isNull();
             softly.assertThat(node2.getPrevious()).isNull();
+        });
+    }
+
+    @Test
+    public void createTest() {
+        AllocationNode head = this.list.getHead();
+        AllocationNode tail = this.list.getTail();
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(head.getT()).isEqualTo(null);
+            softly.assertThat(tail.getT()).isEqualTo(null);
+
+            softly.assertThat(head.getNext()).isSameAs(tail);
+            softly.assertThat(tail.getPrevious()).isSameAs(head);
+
+            softly.assertThat(head.getPrevious()).isEqualTo(null);
+            softly.assertThat(tail.getNext()).isEqualTo(null);
         });
     }
 }
