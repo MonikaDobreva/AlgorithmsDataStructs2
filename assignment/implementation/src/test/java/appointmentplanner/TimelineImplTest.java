@@ -2,12 +2,14 @@ package appointmentplanner;
 
 import appointmentplanner.api.*;
 import appointmentplannerimpl.*;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -70,7 +72,7 @@ public class TimelineImplTest {
     }
 
     @Test
-    public void appointmentStreamCountTest() {
+    public void appointmentStreamTest2() {
         assertThat(this.noStream.count()).isEqualTo(1);
     }
 
@@ -98,5 +100,47 @@ public class TimelineImplTest {
 
         assertThat(actual)
                 .isEqualTo(expected);
+    }
+
+    @Test
+    public void putAppointmentTest() {
+        var factory = new APFactory();
+        var originalTimeSlot = factory.between(this.start, this.end);
+        var appointmentDuration = Duration.ofMinutes(120);
+        var timeSlot = factory.between(this.start.plusSeconds(appointmentDuration.toSeconds()), this.end);
+
+        var paramMap = new HashMap();
+        paramMap.put("OriginalTimeSlot", originalTimeSlot);
+        paramMap.put("AppointmentSlot", this.appointment);
+        paramMap.put("NextTimeSlot", timeSlot);
+
+        this.timeline.putAppointment(paramMap);
+
+        SoftAssertions.assertSoftly(softly -> {
+            assertThat(this.timeline.gapStream().anyMatch((ts -> ts.equals(originalTimeSlot)))).isFalse();
+            assertThat(this.timeline.contains(this.appointment)).isTrue();
+            assertThat(this.timeline.gapStream().anyMatch((ts -> ts.equals(timeSlot)))).isTrue();
+        });
+    }
+
+    @Test
+    public void putAppointmentTest2() {
+        var factory = new APFactory();
+        var originalTimeSlot = factory.between(start, end);
+        var appointmentDuration = Duration.ofMinutes(120);
+        var timeSlot = factory.between(start.plusSeconds(appointmentDuration.toSeconds()), end);
+        var paramMap = new HashMap();
+
+        paramMap.put("OriginalTimeSlot", originalTimeSlot);
+        paramMap.put("AppointmentSlot", null);
+        paramMap.put("TimeSlot", timeSlot);
+
+        this.timeline.putAppointment(paramMap);
+        var test = this.timeline.gapStream().peek(System.out::println).count();
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(this.timeline.contains(appointment)).isFalse();
+            softly.assertThat(this.timeline.gapStream().anyMatch((ts -> ts.equals(timeSlot)))).isFalse();
+            softly.assertThat(this.timeline.gapStream().anyMatch((ts -> ts.equals(originalTimeSlot)))).isTrue();
+        });
     }
 }
