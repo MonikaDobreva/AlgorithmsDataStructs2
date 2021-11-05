@@ -200,7 +200,6 @@ public class TimelineImpl implements Timeline {
             if (!(previousStart.isAfter(previousEnd) || previousStart.equals(previousEnd))) {
                 returnMap.put("PreviousTimeSlot", Optional.of(new TimeslotImpl(previousStart, previousEnd)));
             }
-
             return returnMap;
         }
         return null;
@@ -285,17 +284,109 @@ public class TimelineImpl implements Timeline {
 
     @Override
     public List<TimeSlot> getGapsFittingSmallestFirst(Duration duration) {
-        return null;
+        var gapList = getGapsFitting(duration);
+        Collections.sort(gapList, Comparator.comparing(TimeSlot::duration));
+        return gapList;
     }
 
     @Override
     public List<TimeSlot> getGapsFittingLargestFirst(Duration duration) {
-        return null;
+        var gapList = getGapsFitting(duration);
+        Collections.sort(gapList, Comparator.comparing(TimeSlot::duration));
+        Collections.reverse(gapList);
+        return gapList;
+    }
+
+    private boolean listEmpty(Map<Timeline, List<TimeSlot>> timeLineGapList) {
+        for(var timeSlotList : timeLineGapList.values()) {
+            if (timeSlotList.isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Instant startingEdge(Map<Timeline, List<TimeSlot>> timeLineGapList) {
+        var currentStartingEdge = timeLineGapList.get(this).get(0).getStart();
+        Instant currentTimeSlotStartInstant;
+
+        for(var timeSlotList : timeLineGapList.values()) {
+            currentTimeSlotStartInstant = timeSlotList.get(0).getStart();
+            if (currentTimeSlotStartInstant.isAfter(currentStartingEdge)) {
+                currentStartingEdge = currentTimeSlotStartInstant;
+            }
+        }
+
+        return currentStartingEdge;
+    }
+
+    private boolean allViableStartingEdge(Map<Timeline, List<TimeSlot>> timeLineGapList, Instant startingEdge) {
+        var returnValue = true;
+        Instant currentTimeSlotEndInstant;
+        for(var timeSlotList : timeLineGapList.values()) {
+            currentTimeSlotEndInstant = timeSlotList.get(0).getEnd();
+            if (currentTimeSlotEndInstant.isBefore(startingEdge) || currentTimeSlotEndInstant.equals(startingEdge)) {
+                timeSlotList.remove(0);
+                returnValue =  false;
+            }
+        }
+        return returnValue;
+    }
+
+    private Instant endingEdge(Map<Timeline, List<TimeSlot>> timeLineGapList) {
+        var currentEndingEdge = timeLineGapList.get(this).get(0).getEnd();
+        Instant currentTimeSlotEndInstant;
+
+        for(var timeSlotList : timeLineGapList.values()) {
+            currentTimeSlotEndInstant = timeSlotList.get(0).getEnd();
+            if (currentTimeSlotEndInstant.isBefore(currentEndingEdge)) {
+                currentEndingEdge = currentTimeSlotEndInstant;
+            }
+        }
+
+        return currentEndingEdge;
+    }
+
+    private void allViableEndingEdge(Map<Timeline, List<TimeSlot>> timeLineGapList, Instant startingEdge, Instant endingEdge, Duration duration, List<TimeSlot> returnList) {
+        var factory = new APFactory();
+        var startEndEdgeTimeSlot = factory.between(startingEdge, endingEdge);
+
+        Instant currentTimeSlotEndInstant;
+
+        for(var timeSlotList : timeLineGapList.values()) {
+            currentTimeSlotEndInstant = timeSlotList.get(0).getEnd();
+            if (currentTimeSlotEndInstant.isBefore(endingEdge) || currentTimeSlotEndInstant.equals(endingEdge)) {
+                timeSlotList.remove(0);
+            }
+        }
+
+        if (startEndEdgeTimeSlot.fits(duration)) {
+            returnList.add(startEndEdgeTimeSlot);
+        }
     }
 
     @Override
     public List<TimeSlot> getMatchingFreeSlotsOfDuration(Duration minLength, List<Timeline> other) {
-        return null;
+        List<TimeSlot> returnList = new ArrayList<>();
+        Map<Timeline, List<TimeSlot>> timeLineGapList = new HashMap();
+        for(var timeline : other) {
+            timeLineGapList.put(timeline, timeline.getGapsFitting(minLength));
+        }
+        timeLineGapList.put(this, this.getGapsFitting(minLength));
+
+        while(true) {
+            if (listEmpty(timeLineGapList)) {
+                break;
+            }
+            Instant startingEdge = startingEdge(timeLineGapList);
+            if (!allViableStartingEdge(timeLineGapList, startingEdge)) {
+                continue;
+            }
+
+            Instant endingEdge = endingEdge(timeLineGapList);
+            allViableEndingEdge(timeLineGapList, startingEdge, endingEdge, minLength, returnList);
+        }
+        return returnList;
     }
 
     public void putAppointment(Map<String, TimeSlot> timeSlotMap) {
