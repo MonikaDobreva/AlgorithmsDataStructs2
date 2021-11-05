@@ -30,21 +30,6 @@ public class DoublyLinkedList<T> implements Iterable<T>{
         this.size = 0;
     }
 
-    public void addNode(T item) {
-        AllocationNode<T> newNode = new AllocationNode<>(item);
-        if (this.head == null) {
-            this.tail = newNode;
-            this.head.previous = null;
-            this.tail.next = null;
-        } else {
-            this.tail.next = newNode;
-            newNode.previous = this.tail;
-            this.tail = newNode;
-            this.tail.next = null;
-        }
-        this.size++;
-    }
-
     public int getSize() {
         return size;
     }
@@ -162,5 +147,32 @@ public class DoublyLinkedList<T> implements Iterable<T>{
         previousNode.setPrevious(null);
         node.setT(t);
         return previousNode;
+    }
+
+    public AllocationNode<T> lookForTNode(T t) {
+        var node = this.head;
+        for (int i = 0; i < this.size; i++) {
+            node = node.next;
+            try {
+                if (node.getT().equals(t)) {
+                    return node;
+                }
+            } catch(NullPointerException np) {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    public List<T> lookForInstancesOf(Class t) {
+        var tList = new ArrayList();
+        var node = this.head;
+        for(int i = 0; i < size; i++) {
+            node = node.next;
+            if (node.getT().getClass().equals(t)) {
+                tList.add(node.getT());
+            }
+        }
+        return tList;
     }
 }

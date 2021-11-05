@@ -1,7 +1,9 @@
 package appointmentplanner;
 
+import appointmentplanner.api.Appointment;
 import appointmentplanner.api.LocalDay;
 import appointmentplanner.api.TimeSlot;
+import appointmentplannerimpl.AppointmentImpl;
 import appointmentplannerimpl.DoublyLinkedList;
 import appointmentplannerimpl.TimeslotImpl;
 import org.assertj.core.api.SoftAssertions;
@@ -100,6 +102,70 @@ public class LinkedListTest {
 
         assertThat(this.list.getSize())
                 .isEqualTo(0);
+    }
+
+    @Test
+    public void addToBackTest() {
+        var timeslot = mock(TimeSlot.class);
+        var timeslot2 = mock(TimeSlot.class);
+        var setToBackTimeSlot = mock(TimeSlot.class);
+
+        this.list.toFront(timeslot);
+        this.list.toFront(timeslot2);
+        this.list.addToBack(setToBackTimeSlot, timeslot2);
+
+        var setToBackNode = this.list.lookForNode(setToBackTimeSlot);
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(setToBackNode.getT()).isEqualTo(setToBackTimeSlot);
+            softly.assertThat(setToBackNode.getPrevious().getT()).isEqualTo(timeslot2);
+            softly.assertThat(setToBackNode.getNext().getT()).isEqualTo(timeslot);
+            softly.assertThat(setToBackNode.getNext().getPrevious()).isEqualTo(setToBackNode);
+            softly.assertThat(setToBackNode.getPrevious().getNext()).isEqualTo(setToBackNode);
+            softly.assertThat(this.list.getSize()).isEqualTo(3);
+        });
+    }
+
+    @Test
+    public void lookForTNodeTest() {
+        var timeslot = mock(TimeSlot.class);
+
+        this.list.toFront(timeslot);
+
+        assertThat(this.list.lookForTNode(timeslot).getT()).isEqualTo(timeslot);
+
+    }
+
+    @Test
+    public void lookForTNodeTest2() {
+        var timeslot = mock(TimeSlot.class);
+
+        assertThat(this.list.lookForTNode(timeslot)).isNull();
+    }
+
+    @Test
+    public void lookForInstancesOfTest() {
+        var timeSlot = mock(TimeSlot.class);
+        var appointment1 = mock(Appointment.class);
+        var appointment2 = mock(Appointment.class);
+        var appointment3 = mock(Appointment.class);
+        var appointment4 = mock(Appointment.class);
+
+        this.list.toFront(timeSlot);
+        this.list.toFront(timeSlot);
+        this.list.toFront(appointment1);
+        this.list.toFront(timeSlot);
+        this.list.toFront(appointment2);
+        this.list.toFront(appointment3);
+        this.list.toFront(timeSlot);
+        this.list.toFront(appointment4);
+
+        var foundTimeSlots = this.list.lookForInstancesOf(mock(Appointment.class).getClass());
+
+        SoftAssertions.assertSoftly(softly -> {
+            for(var find : foundTimeSlots) {
+                softly.assertThat(find).isExactlyInstanceOf(mock(Appointment.class).getClass());
+            }
+        });
     }
 
 
