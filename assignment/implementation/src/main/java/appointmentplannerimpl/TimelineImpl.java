@@ -87,7 +87,6 @@ public class TimelineImpl implements Timeline {
             }
         }
 
-
         var timeSlotMap = optionalToTimeSlot(timeSlotOptionalMap);
         if (timeSlotOptionalMap.containsKey("AppointmentSlot")) {
             if (timeSlotOptionalMap.get("AppointmentSlot").isEmpty() == false) {
@@ -205,6 +204,20 @@ public class TimelineImpl implements Timeline {
             return returnMap;
         }
         return null;
+    }
+
+    private List<TimeSlot> getGapsFitting(Duration duration, Stream<TimeSlot> timeslotStream) {
+        var timeslotList = new ArrayList();
+        timeslotStream.filter(timeSlot -> {
+                    var timeSlotDuration = Duration.between(timeSlot.getStart(), timeSlot.getEnd());
+                    if (!timeSlotDuration.minus(duration).isNegative()) {
+                        return true;
+                    }
+                    return false;
+                })
+                .forEach(timeslotList::add);
+
+        return timeslotList;
     }
 
     @Override
