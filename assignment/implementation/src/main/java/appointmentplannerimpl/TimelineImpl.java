@@ -263,9 +263,7 @@ public class TimelineImpl implements Timeline {
 
     @Override
     public boolean canAddAppointmentOfDuration(Duration duration) {
-        Duration dur = Duration.between(this.start, this.end);
-
-        return false;
+        return getGapsFitting(duration).size() > 0;
     }
 
     public Stream<TimeSlot> gapStreamBackwards() {
