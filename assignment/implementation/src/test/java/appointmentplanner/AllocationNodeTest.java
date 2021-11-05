@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 public class AllocationNodeTest {
     private DoublyLinkedList<TimeSlot> list;
@@ -45,7 +46,21 @@ public class AllocationNodeTest {
         var node = this.list.getHead().getNext();
         node.setT(this.timeslot);
 
-        assertThat(node.getT()).isEqualTo(this.timeslot);
+        assertThat(node.getT())
+                .isEqualTo(this.timeslot);
+    }
+
+    @Test
+    public void replaceTTest() {
+        var timeSlot = mock(TimeSlot.class);
+        var replaceTimeSlot = mock(TimeSlot.class);
+        this.list.toFront(timeSlot);
+
+        var node = this.list.getHead().getNext();
+        node.setT(replaceTimeSlot);
+
+        assertThat(node.getT())
+                .isEqualTo(replaceTimeSlot);
     }
 }
 
