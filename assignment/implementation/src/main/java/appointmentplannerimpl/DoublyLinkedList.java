@@ -210,11 +210,5 @@ public class DoublyLinkedList<T> implements Iterable<T>{
             return this.t;
         }
     }
-
-
-
-
-
-
 }
 
