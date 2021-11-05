@@ -203,4 +203,31 @@ public class LinkedListTest {
             }
         });
     }
+
+    @Test
+    public void mergeNodesNext() {
+        var t = mock(TimeSlot.class);
+        var t2 = mock(Appointment.class);
+        var t3 = mock(TimeSlot.class);
+
+        this.list.toFront(t2);
+        this.list.toFront(t);
+
+        var node = this.list.lookForTNode(t);
+        var node2 = this.list.lookForTNode(t2);
+
+        this.list.mergeNodesNext(node, node2, t3);
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(this.list.lookForTNode(t)).isNull();
+            softly.assertThat(this.list.lookForTNode(t2)).isNull();
+            softly.assertThat(this.list.lookForTNode(t3).getT()).isEqualTo(t3);
+            softly.assertThat(this.list.lookForTNode(t3).getT().getStart()).isEqualTo(t.getStart());
+            softly.assertThat(this.list.lookForTNode(t3).getT().getEnd()).isEqualTo(t.getEnd());
+            softly.assertThat(node.getNext()).isNotNull();
+            softly.assertThat(node.getPrevious()).isNotNull();
+            softly.assertThat(node2.getNext()).isNull();
+            softly.assertThat(node2.getPrevious()).isNull();
+        });
+    }
 }
