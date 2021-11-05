@@ -91,11 +91,12 @@ public class TimelineImplTest {
         assertThat(contains).isFalse();
     }
 
-    //@Test
-    //public void findAppointments() {
-      //  var expected = this.timeline.addAppointment(this.localDay, this.appointmentData, TimePreference.UNSPECIFIED).get();
-        //var actual = this.timeline.findAppointments(val -> val.equals(expected)).get(0);
+    @Test
+    public void findAppointments() {
+        var expected = this.timeline.addAppointment(this.localDay, this.appointmentData, TimePreference.UNSPECIFIED).get();
+        var actual = this.timeline.findAppointments(val -> val.equals(expected)).get(0);
 
-        //assertThat(actual).isEqualTo(expected);
-    //}
+        assertThat(actual)
+                .isEqualTo(expected);
+    }
 }
