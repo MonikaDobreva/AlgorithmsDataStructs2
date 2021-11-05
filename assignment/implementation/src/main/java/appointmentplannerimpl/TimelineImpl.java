@@ -252,9 +252,14 @@ public class TimelineImpl implements Timeline {
                 .anyMatch((appSearch -> appSearch.equals(appointment)));
     }
 
+    public Stream<TimeSlot> gapStream() {
+        return this.list.stream()
+                .filter(timeSlot -> (!(timeSlot instanceof Appointment)));
+    }
+
     @Override
     public List<TimeSlot> getGapsFitting(Duration duration) {
-        return null;
+        return getGapsFitting(duration, gapStream());
     }
 
     @Override
