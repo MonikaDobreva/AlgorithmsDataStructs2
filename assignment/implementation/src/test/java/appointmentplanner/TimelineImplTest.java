@@ -143,4 +143,6 @@ public class TimelineImplTest {
             softly.assertThat(this.timeline.gapStream().anyMatch((ts -> ts.equals(originalTimeSlot)))).isTrue();
         });
     }
+
+
 }

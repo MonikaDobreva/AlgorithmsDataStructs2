@@ -3,9 +3,7 @@ package appointmentplanner;
 import appointmentplanner.api.Appointment;
 import appointmentplanner.api.LocalDay;
 import appointmentplanner.api.TimeSlot;
-import appointmentplannerimpl.AppointmentImpl;
-import appointmentplannerimpl.DoublyLinkedList;
-import appointmentplannerimpl.TimeslotImpl;
+import appointmentplannerimpl.*;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -58,6 +56,20 @@ public class LinkedListTest {
 
         assertThat(this.list.getSize())
                 .isEqualTo(1);
+    }
+
+    @Test
+    public void iterator() {
+        var iterator = this.list.iterator();
+        assertThat(iterator)
+                .isExactlyInstanceOf(LinkedListIterator.class);
+    }
+
+    @Test
+    public void reverseIterator() {
+        var iteratorBackwards = this.list.iteratorBackwards();
+        assertThat(iteratorBackwards)
+                .isExactlyInstanceOf(LinkedListBackwardsIterator.class);
     }
 
     @Test
