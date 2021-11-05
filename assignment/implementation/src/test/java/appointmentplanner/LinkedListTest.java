@@ -59,14 +59,14 @@ public class LinkedListTest {
     }
 
     @Test
-    public void iterator() {
+    public void iteratorTest() {
         var iterator = this.list.iterator();
         assertThat(iterator)
                 .isExactlyInstanceOf(LinkedListIterator.class);
     }
 
     @Test
-    public void reverseIterator() {
+    public void backwardsIteratorTest() {
         var iteratorBackwards = this.list.iteratorBackwards();
         assertThat(iteratorBackwards)
                 .isExactlyInstanceOf(LinkedListBackwardsIterator.class);
