@@ -490,7 +490,7 @@ public class TimelineImplTest {
 
         assertThat(list.size()).isEqualTo(0);
     }
-    @Disabled
+
     @Test
     public void matchingFreeSlotsOfDuration0DurationGap() {
         var mockedAppointmentData300Duration = mock(AppointmentData.class);
