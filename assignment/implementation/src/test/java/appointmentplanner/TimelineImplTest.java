@@ -207,4 +207,43 @@ public class TimelineImplTest {
 
         assertThat(this.timeline.getGapsFitting(this.appointmentData.getDuration()).size()).isEqualTo(2);
     }
+
+    @Test
+    public void getGapsFittingTest() {
+        var requiredDuration = Duration.ofMinutes(60);
+        var fittingTimeslots = this.timeline.getGapsFitting(requiredDuration);
+
+        SoftAssertions.assertSoftly(softly -> {
+            assertThat(fittingTimeslots.get(0).getStart()).isEqualTo(this.start);
+            assertThat(fittingTimeslots.get(0).getEnd()).isEqualTo(this.end);
+        });
+    }
+
+    @Test
+    public void getGapsFittingTest2() {
+        var requiredDuration = Duration.ofMinutes(60);
+        var fittingTimeslots = this.timeline.getGapsFittingReversed(requiredDuration);
+
+        SoftAssertions.assertSoftly(softly -> {
+            assertThat(fittingTimeslots.get(0).getStart()).isEqualTo(this.start);
+            assertThat(fittingTimeslots.get(0).getEnd()).isEqualTo(this.end);
+        });
+    }
+
+    @Test
+    public void getGapsFittingTest3() {
+        var requiredDuration = Duration.ofHours(24);
+        var fittingTimeslots = this.timeline.getGapsFitting(requiredDuration);
+
+        SoftAssertions.assertSoftly(softly -> {
+            assertThat(fittingTimeslots.isEmpty()).isTrue();
+        });
+    }
+
+    @Test
+    public void canAddAppointmentOfDurationTest() {
+        var fits = this.timeline.canAddAppointmentOfDuration(Duration.ofMinutes(60));
+
+        assertThat(fits).isTrue();
+    }
 }

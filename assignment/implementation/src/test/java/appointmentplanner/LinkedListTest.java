@@ -262,8 +262,8 @@ public class LinkedListTest {
 
     @Test
     public void createTest() {
-        AllocationNode head = this.list.getHead();
-        AllocationNode tail = this.list.getTail();
+        DoublyLinkedList.AllocationNode head = this.list.getHead();
+        DoublyLinkedList.AllocationNode tail = this.list.getTail();
 
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(head.getT()).isEqualTo(null);

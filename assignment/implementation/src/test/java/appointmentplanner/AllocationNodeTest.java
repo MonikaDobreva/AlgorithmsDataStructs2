@@ -1,8 +1,8 @@
 package appointmentplanner;
 
 import appointmentplanner.api.TimeSlot;
-import appointmentplannerimpl.AllocationNode;
 import appointmentplannerimpl.DoublyLinkedList;
+import appointmentplannerimpl.DoublyLinkedList.*;
 import appointmentplannerimpl.TimeslotImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ public class AllocationNodeTest {
 
     @Test
     public void setGetPrevTest() {
-        AllocationNode node = new AllocationNode(this.timeSlot);
+        var node = new AllocationNode(this.timeSlot);
         this.list.getTail().setPrevious(node);
 
         assertThat(this.list.getTail().getPrevious())
@@ -33,7 +33,7 @@ public class AllocationNodeTest {
 
     @Test
     public void setGetNextTest() {
-        AllocationNode node = new AllocationNode(this.timeSlot);
+        DoublyLinkedList.AllocationNode node = new DoublyLinkedList.AllocationNode(this.timeSlot);
         this.list.getHead().setNext(node);
 
         assertThat(this.list.getHead().getNext())

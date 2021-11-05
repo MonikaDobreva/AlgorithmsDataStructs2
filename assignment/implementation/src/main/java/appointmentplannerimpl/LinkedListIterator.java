@@ -3,10 +3,10 @@ package appointmentplannerimpl;
 import java.util.Iterator;
 
 public class LinkedListIterator<T> implements Iterator {
-    private AllocationNode<T> node;
-    private AllocationNode<T> tail;
+    private DoublyLinkedList.AllocationNode<T> node;
+    private DoublyLinkedList.AllocationNode<T> tail;
 
-    public LinkedListIterator(AllocationNode<T> head, AllocationNode<T> tail){
+    public LinkedListIterator(DoublyLinkedList.AllocationNode<T> head, DoublyLinkedList.AllocationNode<T> tail){
         this.node = head;
         this.tail = tail;
     }

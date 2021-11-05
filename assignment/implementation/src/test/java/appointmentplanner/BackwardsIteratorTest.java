@@ -1,7 +1,6 @@
 package appointmentplanner;
 
 import appointmentplanner.api.TimeSlot;
-import appointmentplannerimpl.AllocationNode;
 import appointmentplannerimpl.DoublyLinkedList;
 import appointmentplannerimpl.LinkedListBackwardsIterator;
 import org.assertj.core.api.SoftAssertions;
@@ -47,8 +46,8 @@ public class BackwardsIteratorTest {
 
     @Test
     public void nextTest() {
-        var node = (AllocationNode) this.iterator.next();
-        var otherNode = (AllocationNode) this.iterator.next();
+        var node = (DoublyLinkedList.AllocationNode) this.iterator.next();
+        var otherNode = (DoublyLinkedList.AllocationNode) this.iterator.next();
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(node.getT()).isEqualTo(this.forth);
             softly.assertThat(otherNode.getT()).isEqualTo(this.third);
