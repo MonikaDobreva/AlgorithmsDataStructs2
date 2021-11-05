@@ -269,9 +269,18 @@ public class TimelineImpl implements Timeline {
         return false;
     }
 
+    public Stream<TimeSlot> gapStreamBackwards() {
+        return this.list.streamBackwards()
+                .filter(timeslot -> (!(timeslot instanceof Appointment)));
+    }
+
+    public Stream<TimeSlot> stream() {
+        return this.list.stream();
+    }
+
     @Override
     public List<TimeSlot> getGapsFittingReversed(Duration duration) {
-        return null;
+        return getGapsFitting(duration, gapStreamBackwards());
     }
 
     @Override
