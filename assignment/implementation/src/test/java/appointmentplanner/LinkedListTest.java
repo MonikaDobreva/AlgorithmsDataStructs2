@@ -73,6 +73,30 @@ public class LinkedListTest {
     }
 
     @Test
+    public void streamTest() {
+        var t = mock(TimeSlot.class);
+        var t2 = mock(Appointment.class);
+
+        this.list.toFront(t2);
+        this.list.toFront(t);
+
+        var stream = this.list.stream();
+        assertThat(stream.findFirst().get()).isEqualTo(t);
+    }
+
+    @Test
+    public void reverseStream() {
+        var t = mock(TimeSlot.class);
+        var t2 = mock(Appointment.class);
+
+        this.list.toFront(t2);
+        this.list.toFront(t);
+
+        var stream = this.list.streamBackwards();
+        assertThat(stream.findFirst().get()).isEqualTo(t2);
+    }
+
+    @Test
     public void addInFrontTest() {
         Instant start = LocalDay.now().at(20,30);
         Instant end = start.plusSeconds(560);
