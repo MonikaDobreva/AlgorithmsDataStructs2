@@ -1,214 +1,188 @@
 package appointmentplannerimpl;
 
-import java.util.Iterator;
+import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import java.util.*;
 
-public class DoublyLinkedList<T> implements Iterable<T>{
-    AllocationNode<T> head = null;
-    AllocationNode<T> tail = null;
+public class DoublyLinkedList<T> implements Iterable<T> {
+    private Node<T> head, tail;
     private int size;
-    private Stream<T> stream(Iterator iterator) {
-        Spliterator<AllocationNode<T>> spliterator = Spliterators.spliteratorUnknownSize(
-                iterator, Spliterator.ORDERED);
-        return StreamSupport.stream(spliterator, false)
-                .map(node -> node.getT());
-    }
 
-    public DoublyLinkedList(){
-        //initialize head and tail
-        this.head = new AllocationNode<T>(null);
-        this.tail = new AllocationNode<T>(null);
-        //set head and tail to be the same
-        this.head.next = this.tail;
-        this.tail.previous = this.head;
-        //set head and tail to be the only thing in the list
-        this.head.previous = null;
+    public DoublyLinkedList() {
+        head = new Node<T>(null);
+        tail = new Node<T>(null);
+
+        head.next = tail;
+        tail.previous = head;
+
+        head.previous = null;
         tail.next = null;
-        //size of the list is 0 at this moment
-        this.size = 0;
+
+        size = 0;
     }
 
-    public int getSize() {
-        return size;
+    public Node<T> getHead() {
+        return head;
     }
 
-    public AllocationNode<T> getHead() {
-        return this.head;
+    public Node<T> getTail() {
+        return tail;
     }
 
-    public AllocationNode<T> getTail(){
-        return this.tail;
+    public void addFront(T item) {
+        addAfter(item, head);
     }
 
-    public AllocationNode<T> lookForNode(T t){
-        //create a node to equal the head
-        AllocationNode<T> node = this.head;
-        //go through the list
-        for(int i = 0; i < this.size; i++){
-            //the node from before will now go through the list
-            //it goes through each next node after the head
-            node = node.getNext();
-            //if the item that we set equals the item in
-            //one of the nodes fro the list it is returned
-            if(node.getT().equals(t)){
-                return node;
-            }
-            //if the item is not found null is returned
-            return null;
-        }
-        return null;
+    public void addEnd(T item) {
+        addBefore(item, tail);
     }
 
-    public void removeNode(T t){
-        //create a node to search for
-        AllocationNode<T> node = lookForNode(t);
-        //check if the given (searched for) node is not null
-        //if it's null we cannot remove it
-        if(node !=null){
-            //set the previous of the node to be its next
-            node.getPrevious().setNext(node.getNext());
-            //set the next of the node to be its previous
-            node.getNext().setPrevious(node.getPrevious());
-            //the size of the list decreases,
-            //because an item has been removed
-            this.size--;
+    public void addBefore(T item, T nextItem) {
+        var nextNode = searchItemNode(nextItem);
+        addBefore(item, nextNode);
+    }
+
+    public void addBefore(T item, Node nextNode) {
+        if (nextNode != null && item != null) {
+            var newNode = new Node(item);
+
+            newNode.setNext(nextNode);
+            newNode.setPrevious(nextNode.previous);
+            newNode.previous.setNext(newNode);
+            nextNode.setPrevious(newNode);
+
+            size++;
         }
     }
 
-    public Stream<T> stream() {
-        return this.stream(iterator());
+    public void addAfter(T item, T beforeItem) {
+        var beforeNode = searchItemNode(beforeItem);
+        addAfter(item, beforeNode);
     }
 
-    public Stream<T> streamBackwards() {
-        return this.stream(iteratorBackwards());
+    public void addAfter(T item, Node<T> beforeNode) {
+        addBefore(item, beforeNode.next);
     }
 
-    @Override
-    public Iterator<T> iterator() {
-        return new LinkedListIterator<T>(this.head,this.tail);
-    }
-
-    public Iterator<T> iteratorBackwards(){
-        return new LinkedListBackwardsIterator<T>(this.head, this.tail);
-    }
-
-    public void toFront(T t) {
-        addToBack(t, this.head);
-    }
-
-    public void addInFront(T t, T nextT) {
-        var nextAllocationNode = lookForNode(nextT);
-        addInFront(t, nextAllocationNode);
-    }
-
-    public void addInFront(T t, AllocationNode nextNode) {
-        //check if the input is not null
-        if (nextNode != null && t != null) {
-            //initialize a new node
-            AllocationNode anotherNode = new AllocationNode(t);
-            //the given node is set to be the next of the node created above
-            anotherNode.setNext(nextNode);
-            anotherNode.setPrevious(nextNode.previous);
-            anotherNode.previous.setNext(anotherNode);
-            nextNode.setPrevious(anotherNode);
-
-            this.size++;
-        }
-    }
-
-    public void addToBack(T t, T frontT) {
-        var frontNode = lookForNode(frontT);
-        addToBack(t, frontNode);
-    }
-
-    public void addToBack(T t, AllocationNode<T> backNode) {
-        addInFront(t, backNode.next);
-    }
-
-    public void toBack(T t) {
-        addInFront(t, this.tail);
-    }
-
-    public AllocationNode<T> mergeNodesNext(AllocationNode node, AllocationNode nextNode, T t) {
-        nextNode.setPrevious(null);
-        node.setNext(nextNode.getNext());
-        node.getNext().setPrevious(node);
-        nextNode.setNext(null);
-        node.setT(t);
-        return node;
-    }
-
-    public AllocationNode<T> mergeNodesPrevious(AllocationNode node, AllocationNode previousNode, T t) {
-        previousNode.setNext(null);
-        node.setPrevious(previousNode.getPrevious());
-        node.getPrevious().setNext(node);
-        previousNode.setPrevious(null);
-        node.setT(t);
-        return previousNode;
-    }
-
-    public AllocationNode<T> lookForTNode(T t) {
-        var node = this.head;
-        for (int i = 0; i < this.size; i++) {
-            node = node.next;
+    public Node<T> searchItemNode(T item) {
+        var currentNode = head;
+        for (int i = 0; i < size; i++) {
+            currentNode = currentNode.next;
             try {
-                if (node.getT().equals(t)) {
-                    return node;
+                if (currentNode.getItem().equals(item)) {
+                    return currentNode;
                 }
-            } catch(NullPointerException np) {
+            } catch (NullPointerException npe) {
                 return null;
             }
         }
         return null;
     }
 
-    public List<T> lookForInstancesOf(Class t) {
-        var tList = new ArrayList();
-        var node = this.head;
-        for(int i = 0; i < size; i++) {
-            node = node.next;
-            if (node.getT().getClass().equals(t)) {
-                tList.add(node.getT());
+    public List<T> searchExactInstancesOf(Class item) {
+        var itemList = new ArrayList();
+        var currentNode = head;
+        for (int i = 0; i < size; i++) {
+            currentNode = currentNode.next;
+            if (currentNode.getItem().getClass().equals(item)) {
+                itemList.add(currentNode.getItem());
             }
         }
-        return tList;
+        return itemList;
     }
-    public static class AllocationNode<T> {
-        AllocationNode<T> previous;
-        AllocationNode<T> next;
-        T t;
 
-        public AllocationNode(T t) {
-            this.t = t;
+    public void remove(T item) {
+        var currentNode = searchItemNode(item);
+        if (currentNode != null) {
+            currentNode.previous.setNext(currentNode.next);
+            currentNode.next.setPrevious(currentNode.previous);
+
+            size--;
+        }
+    }
+
+    public Node<T> mergeNodesPrevious(Node node, Node previousNode, T newItem) {
+        previousNode.setNext(null);
+        node.setPrevious(previousNode.getPrevious());
+        node.getPrevious().setNext(node);
+        previousNode.setPrevious(null);
+        node.setItem(newItem);
+        return previousNode;
+    }
+
+    public Node<T> mergeNodesNext(Node node, Node nextNode, T newItem) {
+        nextNode.setPrevious(null);
+        node.setNext(nextNode.getNext());
+        node.getNext().setPrevious(node);
+        nextNode.setNext(null);
+        node.setItem(newItem);
+        return node;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return new LinkedListIterator<T>(head, tail);
+    }
+
+    public Iterator<T> reverseIterator() {
+        return new LinkedListBackwardsIterator<T>(head, tail);
+    }
+
+    private Stream<T> stream(Iterator iterator) {
+        Spliterator<Node<T>> spliterator = Spliterators.spliteratorUnknownSize(
+                iterator, Spliterator.ORDERED
+        );
+        return StreamSupport.stream(spliterator, false)
+                .map(node -> node.getItem());
+    }
+
+    public Stream<T> stream() {
+        return this.stream(iterator());
+    }
+
+    public Stream<T> reverseStream() {
+        return this.stream(reverseIterator());
+    }
+
+    public class Node<T> {
+        private Node<T> previous;
+        private Node<T> next;
+        private T item;
+
+        public Node(T item) {
+            this.item = item;
         }
 
-        //setting the next item
-        public void setNext(AllocationNode<T> next){
+        public T getItem() {
+            return item;
+        }
+
+        public Node<T> getPrevious() {
+            return previous;
+        }
+
+        public void setPrevious(Node<T> previous) {
+            this.previous = previous;
+        }
+
+        public Node<T> getNext() {
+            return next;
+        }
+
+        public void setNext(Node<T> next) {
             this.next = next;
         }
-        //setting the previous item
-        public void setPrevious(AllocationNode<T> prev){
-            this.previous = prev;
-        }
 
-        public AllocationNode<T> getNext(){
-            return this.next;
-        }
-
-        public AllocationNode<T> getPrevious(){
-            return this.previous;
-        }
-
-        //setting the item in the node
-        public void setT(T t){
-            this.t = t;
-        }
-        //getting the item in the node
-        public T getT(){
-            return this.t;
+        public void setItem(T item) {
+            this.item = item;
         }
     }
 }
-

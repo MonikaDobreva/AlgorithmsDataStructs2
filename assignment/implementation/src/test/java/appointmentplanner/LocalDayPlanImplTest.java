@@ -2,7 +2,7 @@ package appointmentplanner;
 
 import appointmentplanner.api.LocalDay;
 import appointmentplanner.api.Timeline;
-import appointmentplannerimpl.TimelineImpl;
+import appointmentplannerimpl.TimeLineImpl;
 import appointmentplannerimpl.LocalDayPlanImpl;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.ThrowableAssert;
@@ -38,7 +38,7 @@ public class LocalDayPlanImplTest {
         var day = LocalDay.now();
         var start = day.ofLocalTime(LocalTime.parse("01:00"));
         var end = day.ofLocalTime(LocalTime.parse("02:00"));
-        var timeline = new TimelineImpl(start, end);
+        var timeline = new TimeLineImpl(start, end);
         var ldp = new LocalDayPlanImpl(day, start, end);
 
         SoftAssertions.assertSoftly(softly -> {

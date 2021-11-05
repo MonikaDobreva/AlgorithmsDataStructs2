@@ -4,7 +4,7 @@ import appointmentplanner.api.*;
 import appointmentplannerimpl.AppointmentDataImpl;
 import appointmentplannerimpl.AppointmentRequestImpl;
 import appointmentplannerimpl.LocalDayPlanImpl;
-import appointmentplannerimpl.TimelineImpl;
+import appointmentplannerimpl.TimeLineImpl;
 import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.mock;
 import static org.assertj.core.api.Assertions.assertThat;

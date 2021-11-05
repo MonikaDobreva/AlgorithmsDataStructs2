@@ -2,66 +2,52 @@ package appointmentplanner;
 
 import appointmentplanner.api.TimeSlot;
 import appointmentplannerimpl.DoublyLinkedList;
-import appointmentplannerimpl.DoublyLinkedList.*;
-import appointmentplannerimpl.TimeslotImpl;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-
-import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 public class AllocationNodeTest {
-    private DoublyLinkedList<TimeSlot> list;
-    private TimeslotImpl timeSlot = new TimeslotImpl(Instant.now(), Instant.now().plusSeconds(3600));
-    private TimeslotImpl timeslot = new TimeslotImpl(Instant.now(), Instant.now().plusSeconds(7200));
+    private DoublyLinkedList<TimeSlot> doublyLinkedList;
 
     @BeforeEach
     private void setUp() {
-        this.list = new DoublyLinkedList<TimeSlot>();
+        doublyLinkedList = new DoublyLinkedList<>();
+    }
+
+    @Disabled
+    @Test
+    public void testSetPrevious() {
+        DoublyLinkedList.Node mockedNode = mock(DoublyLinkedList.Node.class);
+
+        doublyLinkedList.getTail().setPrevious(mockedNode);
+
+        assertThat(doublyLinkedList.getTail().getPrevious())
+                .isEqualTo(mockedNode);
+    }
+
+    @Disabled
+    @Test
+    public void testSetNext() {
+        DoublyLinkedList.Node mockedNode = mock(DoublyLinkedList.Node.class);
+
+        doublyLinkedList.getHead().setNext(mockedNode);
+
+        assertThat(doublyLinkedList.getHead().getNext())
+                .isEqualTo(mockedNode);
     }
 
     @Test
-    public void setGetPrevTest() {
-        var node = new AllocationNode(this.timeSlot);
-        this.list.getTail().setPrevious(node);
+    public void replaceItem() {
+        var mockedTimeSlot = mock(TimeSlot.class);
+        var replacedMockedTimeSlot = mock(TimeSlot.class);
+        doublyLinkedList.addFront(mockedTimeSlot);
 
-        assertThat(this.list.getTail().getPrevious())
-                .isEqualTo(node);
-    }
+        var node = doublyLinkedList.getHead().getNext();
+        node.setItem(replacedMockedTimeSlot);
 
-    @Test
-    public void setGetNextTest() {
-        DoublyLinkedList.AllocationNode node = new DoublyLinkedList.AllocationNode(this.timeSlot);
-        this.list.getHead().setNext(node);
-
-        assertThat(this.list.getHead().getNext())
-                .isEqualTo(node);
-    }
-
-    @Test
-    public void setTmethodTest() {
-        this.list.toFront(this.timeSlot);
-        var node = this.list.getHead().getNext();
-        node.setT(this.timeslot);
-
-        assertThat(node.getT())
-                .isEqualTo(this.timeslot);
-    }
-
-    @Test
-    public void replaceTTest() {
-        var timeSlot = mock(TimeSlot.class);
-        var replaceTimeSlot = mock(TimeSlot.class);
-        this.list.toFront(timeSlot);
-
-        var node = this.list.getHead().getNext();
-        node.setT(replaceTimeSlot);
-
-        assertThat(node.getT())
-                .isEqualTo(replaceTimeSlot);
+        assertThat(node.getItem()).isEqualTo(replacedMockedTimeSlot);
     }
 }
-
-

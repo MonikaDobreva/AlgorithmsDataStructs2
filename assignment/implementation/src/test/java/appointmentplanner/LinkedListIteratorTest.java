@@ -22,10 +22,10 @@ public class LinkedListIteratorTest {
     private void setUp() {
         MockitoAnnotations.openMocks(this);
         list = new DoublyLinkedList<TimeSlot>();
-        this.list.toFront(this.forth);
-        this.list.toFront(this.third);
-        this.list.toFront(this.second);
-        this.list.toFront(this.first);
+        this.list.addFront(this.forth);
+        this.list.addFront(this.third);
+        this.list.addFront(this.second);
+        this.list.addFront(this.first);
 
         this.iterator = new LinkedListIterator(this.list.getHead(), this.list.getTail());
     }
@@ -46,11 +46,11 @@ public class LinkedListIteratorTest {
 
     @Test
     public void nextTest() {
-        var node = (DoublyLinkedList.AllocationNode) this.iterator.next();
-        var otherNode = (DoublyLinkedList.AllocationNode) this.iterator.next();
+        var node = (DoublyLinkedList.Node) this.iterator.next();
+        var otherNode = (DoublyLinkedList.Node) this.iterator.next();
         SoftAssertions.assertSoftly(softly -> {
-            softly.assertThat(node.getT()).isEqualTo(this.first);
-            softly.assertThat(otherNode.getT()).isEqualTo(this.second);
+            softly.assertThat(node.getItem()).isEqualTo(this.first);
+            softly.assertThat(otherNode.getItem()).isEqualTo(this.second);
         });
     }
 }

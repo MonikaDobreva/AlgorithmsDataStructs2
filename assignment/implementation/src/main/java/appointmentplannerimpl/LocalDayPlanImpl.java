@@ -17,7 +17,7 @@ public class LocalDayPlanImpl implements LocalDayPlan {
         if (end.isBefore(start)){
             throw new IllegalArgumentException("The end must be after the start!");
         }
-        this.timeline = new TimelineImpl(start, end);
+        this.timeline = new TimeLineImpl(start, end);
         this.day = day;
     }
 

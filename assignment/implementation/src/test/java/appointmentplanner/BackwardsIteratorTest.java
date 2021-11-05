@@ -22,10 +22,10 @@ public class BackwardsIteratorTest {
     private void setUp() {
         MockitoAnnotations.openMocks(this);
         this.list = new DoublyLinkedList<TimeSlot>();
-        this.list.toFront(this.forth);
-        this.list.toFront(this.third);
-        this.list.toFront(this.second);
-        this.list.toFront(this.first);
+        this.list.addFront(this.forth);
+        this.list.addFront(this.third);
+        this.list.addFront(this.second);
+        this.list.addFront(this.first);
 
         this.iterator = new LinkedListBackwardsIterator(this.list.getHead(), this.list.getTail());
     }
@@ -46,11 +46,11 @@ public class BackwardsIteratorTest {
 
     @Test
     public void nextTest() {
-        var node = (DoublyLinkedList.AllocationNode) this.iterator.next();
-        var otherNode = (DoublyLinkedList.AllocationNode) this.iterator.next();
+        var node = (DoublyLinkedList.Node) this.iterator.next();
+        var otherNode = (DoublyLinkedList.Node) this.iterator.next();
         SoftAssertions.assertSoftly(softly -> {
-            softly.assertThat(node.getT()).isEqualTo(this.forth);
-            softly.assertThat(otherNode.getT()).isEqualTo(this.third);
+            softly.assertThat(node.getItem()).isEqualTo(this.forth);
+            softly.assertThat(otherNode.getItem()).isEqualTo(this.third);
         });
     }
 }
