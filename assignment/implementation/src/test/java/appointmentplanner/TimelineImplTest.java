@@ -144,5 +144,67 @@ public class TimelineImplTest {
         });
     }
 
+    @Test
+    public void removeAppointmentTest() {
+        var returnedAppointment = this.timeline.addAppointment(this.localDay, this.appointmentData, TimePreference.UNSPECIFIED).get();
+        this.timeline.removeAppointment(returnedAppointment);
 
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(this.timeline.appointmentStream().anyMatch(timeSlot -> timeSlot.equals(returnedAppointment))).isFalse();
+            softly.assertThat(this.timeline.gapStream().anyMatch(timeSlot -> timeSlot.getStart().equals(this.start)));
+            softly.assertThat(this.timeline.gapStream().anyMatch(timeSlot -> timeSlot.getEnd().equals(this.end)));
+        });
+    }
+
+    @Test
+    public void removeAppointmentTest2() {
+        var returnedAppointment = this.timeline.addAppointment(this.localDay, this.appointmentData, TimePreference.UNSPECIFIED).get();
+        var returnedAppointmentNotRemoved = this.timeline.addAppointment(this.localDay, this.appointmentData, TimePreference.UNSPECIFIED).get();
+        this.timeline.removeAppointment(returnedAppointment);
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(this.timeline.appointmentStream().anyMatch(timeSlot -> timeSlot.equals(returnedAppointment))).isFalse();
+            softly.assertThat(this.timeline.appointmentStream().anyMatch(timeSlot -> timeSlot.equals(returnedAppointmentNotRemoved))).isTrue();
+            softly.assertThat(this.timeline.gapStream().anyMatch(timeSlot -> timeSlot.getStart().equals(this.start) && timeSlot.getEnd().equals(returnedAppointmentNotRemoved.getStart())));
+            softly.assertThat(this.timeline.gapStream().anyMatch(timeSlot -> timeSlot.getEnd().equals(this.end) && timeSlot.getStart().equals(returnedAppointmentNotRemoved.getEnd())));
+        });
+    }
+
+    @Test
+    public void removeAppointmentTest3() {
+        var returnedAppointmentNotRemoved = this.timeline.addAppointment(this.localDay, this.appointmentData, TimePreference.UNSPECIFIED).get();
+        var returnedAppointment = this.timeline.addAppointment(this.localDay, this.appointmentData, TimePreference.UNSPECIFIED).get();
+        this.timeline.removeAppointment(returnedAppointment);
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(this.timeline.appointmentStream().anyMatch(timeSlot -> timeSlot.equals(returnedAppointment))).isFalse();
+            softly.assertThat(this.timeline.appointmentStream().anyMatch(timeSlot -> timeSlot.equals(returnedAppointmentNotRemoved))).isTrue();
+            softly.assertThat(this.timeline.gapStream().anyMatch(timeSlot -> timeSlot.getEnd().equals(this.end) && timeSlot.getStart().equals(returnedAppointmentNotRemoved.getEnd())));
+        });
+    }
+
+    @Test
+    public void removeAppointmentTest4() {
+        this.timeline.addAppointment(this.localDay, this.appointmentData, TimePreference.UNSPECIFIED).get();
+        var app1 = this.timeline.addAppointment(this.localDay, this.appointmentData, TimePreference.UNSPECIFIED).get();
+        var app2 = this.timeline.addAppointment(this.localDay, this.appointmentData, TimePreference.UNSPECIFIED).get();
+
+        this.timeline.removeAppointment(app1);
+        this.timeline.removeAppointment(app2);
+
+        assertThat(this.timeline.getGapsFitting(this.appointmentData.getDuration()).size()).isEqualTo(1);
+    }
+
+    @Test
+    public void removeAppointmentTest5() {
+        this.timeline.addAppointment(this.localDay, this.appointmentData, TimePreference.UNSPECIFIED).get();
+        var app1 = this.timeline.addAppointment(this.localDay, this.appointmentData, TimePreference.UNSPECIFIED).get();
+        var app2 = this.timeline.addAppointment(this.localDay, this.appointmentData, TimePreference.UNSPECIFIED).get();
+        this.timeline.addAppointment(this.localDay, this.appointmentData, TimePreference.UNSPECIFIED).get();
+
+        this.timeline.removeAppointment(app1);
+        this.timeline.removeAppointment(app2);
+
+        assertThat(this.timeline.getGapsFitting(this.appointmentData.getDuration()).size()).isEqualTo(2);
+    }
 }
