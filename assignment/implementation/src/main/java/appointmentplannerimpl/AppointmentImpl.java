@@ -16,14 +16,14 @@ public class AppointmentImpl implements Appointment {
     private AppointmentData ad;
 
     public AppointmentImpl(AppointmentData appointmentData, AppointmentRequest ar, TimeSlot timeSlot) throws IllegalArgumentException {
-        if (ad == null) {
-            throw new IllegalArgumentException("The data cannot be null!");
+        if (appointmentData == null) {
+            throw new IllegalArgumentException("The values cannot be null!");
         }
         if (ar == null){
-            throw new IllegalArgumentException("The request cannot be null!");
+            throw new IllegalArgumentException("The values cannot be null!");
         }
         if (timeSlot == null) {
-            throw new IllegalArgumentException("The time slot cannot be null!");
+            throw new IllegalArgumentException("The values cannot be null!");
         }
         this.timeSlot = timeSlot;
         this.ar = ar;

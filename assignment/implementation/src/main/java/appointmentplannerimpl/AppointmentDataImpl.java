@@ -25,9 +25,7 @@ public class AppointmentDataImpl implements AppointmentData {
     }
 
     public AppointmentDataImpl(String description, Duration duration) {
-        this.duration = duration;
-        this.description = description;
-        this.priority = DEFAULT_PRIORITY;
+        this(description, duration, Priority.LOW);
     }
 
     @Override

@@ -64,7 +64,7 @@ public class AppointmentTest {
                 () -> new AppointmentImpl(mockedData, mockedRequest, mockedSlot);
 
         assertThatCode(constructorCall)
-                .hasMessage("Null values are not being accepted!")
+                .hasMessage("The values cannot be null!")
                 .isExactlyInstanceOf(IllegalArgumentException.class);
     }
 

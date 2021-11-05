@@ -46,7 +46,7 @@ public class APFactory implements AbstractAPFactory {
 
     @Override
     public AppointmentData createAppointmentData(String description, Duration duration) {
-        return new AppointmentDataImpl(description, duration, Priority.LOW);
+        return this.createAppointmentData(description, duration, Priority.LOW);
 
     }
 
